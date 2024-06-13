@@ -3,7 +3,6 @@ import { useFrame } from '@react-three/fiber'
 import {
   PointerLockControls,
   useKeyboardControls,
-  SpotLightHelper,
   useHelper,
 } from '@react-three/drei'
 import {
@@ -11,7 +10,7 @@ import {
   RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier'
-import { SpotLight, Vector3 } from 'three'
+import { SpotLight, Vector3, SpotLightHelper } from 'three'
 import { useCameraShake } from '../hooks/useCameraShake'
 
 const direction = new Vector3()
@@ -27,7 +26,12 @@ export function Player() {
   const [, get] = useKeyboardControls()
   useCameraShake(0.55, 1.4)
 
-  useHelper(spotlightRef, SpotLightHelper, 'cyan') // Add a helper to visualize the spotlight
+  // Use MutableRefObject<SpotLight> and assert to correct type
+  useHelper(
+    spotlightRef as React.MutableRefObject<SpotLight>,
+    SpotLightHelper,
+    'cyan'
+  )
 
   useFrame((state) => {
     const { forward, backward, left, right } = get()
@@ -42,7 +46,7 @@ export function Player() {
     }
 
     const { x, y, z } = ref.current!.translation()
-    state.camera.position.set(x, y, z - 3)
+    state.camera.position.set(x, y, z)
 
     frontVector.set(0, 0, +backward - +forward)
     sideVector.set(+left - +right, 0, 0)
@@ -56,7 +60,6 @@ export function Player() {
       true
     )
 
-    // Update spotlight position and rotation to follow the camera
     if (spotlightRef.current) {
       spotlightRef.current.position.copy(state.camera.position)
       spotlightRef.current.rotation.copy(state.camera.rotation)
@@ -66,15 +69,7 @@ export function Player() {
   return (
     <>
       <ambientLight intensity={0.5} />
-      <spotLight
-        ref={spotlightRef}
-        intensity={10}
-        distance={50}
-        angle={Math.PI / 4}
-        penumbra={0.1}
-        position={[0, 0, -2]}
-        color="white"
-      />
+
       <RigidBody
         ref={ref}
         colliders={false}
@@ -83,6 +78,15 @@ export function Player() {
         position={[0, 4, 0]}
         enabledRotations={[false, false, false]}
       >
+        <spotLight
+          ref={spotlightRef}
+          intensity={1500}
+          distance={100}
+          angle={Math.PI / 8}
+          penumbra={0.03}
+          position={[0, 0, 0]}
+          color="yellow"
+        />
         <CapsuleCollider args={[0.75, 1]} />
       </RigidBody>
       <PointerLockControls />
