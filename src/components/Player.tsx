@@ -1,23 +1,21 @@
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import {
-  PointerLockControls,
-  useKeyboardControls,
-  useHelper,
-} from '@react-three/drei'
+import { PointerLockControls, useKeyboardControls } from '@react-three/drei'
 import {
   CapsuleCollider,
   RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier'
-import { SpotLight, Vector3, SpotLightHelper, Mesh } from 'three'
+import { SpotLight, Vector3, Mesh } from 'three'
 import { useCameraShake } from '../hooks/useCameraShake'
 
 const direction = new Vector3()
 const frontVector = new Vector3()
 const sideVector = new Vector3()
 
-const MAX_VERTICAL_ANGLE = Math.PI / 8
+const MAX_VERTICAL_ANGLE = Math.PI / 6.5
+const BASE_SPEED_MULTIPLIER = 12
+const DASH_SPEED_MULTIPLIER = 20
 
 export function Player() {
   const ref = useRef<RapierRigidBody>(null)
@@ -26,14 +24,8 @@ export function Player() {
   const [, get] = useKeyboardControls()
   useCameraShake(0.55, 1.4)
 
-  // useHelper(
-  //   spotlightRef as React.MutableRefObject<SpotLight>,
-  //   SpotLightHelper,
-  //   'cyan'
-  // )
-
   useFrame((state) => {
-    const { forward, backward, left, right } = get()
+    const { forward, backward, left, right, dash } = get()
     const velocity = ref.current!.linvel()
 
     state.camera.rotation.order = 'YXZ'
@@ -52,15 +44,15 @@ export function Player() {
     direction
       .subVectors(frontVector, sideVector)
       .normalize()
+      .multiplyScalar(dash ? DASH_SPEED_MULTIPLIER : BASE_SPEED_MULTIPLIER)
       .applyQuaternion(state.camera.quaternion)
     ref.current!.setLinvel(
       { x: direction.x, y: velocity.y, z: direction.z },
       true
     )
 
-    // Update the target position to be in front of the camera
     if (targetRef.current) {
-      const targetOffset = new Vector3(0, 0, -10).applyQuaternion(
+      const targetOffset = new Vector3(0, 0, -5).applyQuaternion(
         state.camera.quaternion
       )
       targetRef.current.position.copy(state.camera.position).add(targetOffset)
@@ -75,15 +67,15 @@ export function Player() {
 
   return (
     <>
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={0.2} />
       <spotLight
         ref={spotlightRef}
-        intensity={1500}
-        distance={50}
+        intensity={4500}
+        distance={500}
         angle={Math.PI / 10}
-        penumbra={0.045}
+        penumbra={0.15}
         position={[0, 0, 0]}
-        color="yellow"
+        color="white"
       />
       <RigidBody
         ref={ref}
@@ -96,9 +88,8 @@ export function Player() {
         <CapsuleCollider args={[0.75, 1]} />
       </RigidBody>
       <PointerLockControls />
-      <mesh ref={targetRef} position={[0, 0, -10]} visible={false}>
+      <mesh ref={targetRef} position={[0, 0, -5]} visible={false}>
         <boxGeometry args={[0.1, 8, 8]} />
-        <meshBasicMaterial color="red" />
       </mesh>
     </>
   )
