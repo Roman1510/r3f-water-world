@@ -19,7 +19,8 @@ const DASH_SPEED_MULTIPLIER = 20
 
 export function Player() {
   const ref = useRef<RapierRigidBody>(null)
-  const spotlightRef = useRef<SpotLight>(null)
+  const spotlightRef1 = useRef<SpotLight>(null)
+  const spotlightRef2 = useRef<SpotLight>(null)
   const targetRef = useRef<Mesh>(null)
   const [, get] = useKeyboardControls()
   useCameraShake(0.55, 1.4)
@@ -58,10 +59,19 @@ export function Player() {
       targetRef.current.position.copy(state.camera.position).add(targetOffset)
     }
 
-    if (spotlightRef.current) {
-      spotlightRef.current.position.copy(state.camera.position)
-      spotlightRef.current.target = targetRef.current!
-      spotlightRef.current.target.updateMatrixWorld()
+    if (spotlightRef1.current && spotlightRef2.current) {
+      spotlightRef1.current.position.copy(state.camera.position)
+      spotlightRef1.current.target = targetRef.current!
+      spotlightRef1.current.target.updateMatrixWorld()
+
+      const spotlight2Offset = new Vector3(0, 10, 25).applyQuaternion(
+        state.camera.quaternion
+      )
+      spotlightRef2.current.position
+        .copy(state.camera.position)
+        .add(spotlight2Offset)
+      spotlightRef2.current.target = targetRef.current!
+      spotlightRef2.current.target.updateMatrixWorld()
     }
   })
 
@@ -69,12 +79,21 @@ export function Player() {
     <>
       <ambientLight intensity={0.2} />
       <spotLight
-        ref={spotlightRef}
+        ref={spotlightRef1}
         intensity={4500}
         distance={2500}
-        angle={Math.PI / 10}
+        angle={Math.PI / 7}
         penumbra={0.15}
         position={[0, 0, 0]}
+        color="white"
+      />
+      <spotLight
+        ref={spotlightRef2}
+        intensity={5500}
+        distance={2500}
+        angle={Math.PI / 7}
+        penumbra={0.01}
+        position={[0, 2, -2]}
         color="white"
       />
       <RigidBody
@@ -88,7 +107,7 @@ export function Player() {
         <CapsuleCollider args={[0.75, 1]} />
       </RigidBody>
       <PointerLockControls />
-      <mesh ref={targetRef} position={[0, 0, -5]} visible={false}>
+      <mesh ref={targetRef} position={[0, 0, -3]} visible={false}>
         <boxGeometry args={[0.1, 8, 8]} />
       </mesh>
     </>
