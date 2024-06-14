@@ -10,36 +10,36 @@ import { Color, FogExp2 } from 'three'
 export function Scene() {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
-      <KeyboardControls
-        map={[
-          { name: 'forward', keys: ['ArrowUp', 'w', 'W'] },
-          { name: 'backward', keys: ['ArrowDown', 's', 'S'] },
-          { name: 'left', keys: ['ArrowLeft', 'a', 'A'] },
-          {
-            name: 'right',
-            keys: ['ArrowRight', 'd', 'D'],
-          },
-          { name: 'dash', keys: ['Space'] },
-        ]}
+      <Canvas
+        camera={{ fov: 30 }}
+        onCreated={({ scene }) => {
+          scene.background = new Color(0x000000)
+          scene.fog = new FogExp2(0x000000, 0.01)
+        }}
       >
-        <Canvas
-          camera={{ fov: 30 }}
-          onCreated={({ scene }) => {
-            scene.background = new Color(0x000000)
-            scene.fog = new FogExp2(0x000000, 0.01)
-          }}
-        >
-          <Suspense fallback={<Loading />}>
-            <Physics gravity={[0, -1, 0]}>
+        <Suspense fallback={<Loading />}>
+          <Physics gravity={[0, -1, 0]}>
+            <KeyboardControls
+              map={[
+                { name: 'forward', keys: ['ArrowUp', 'w', 'W'] },
+                { name: 'backward', keys: ['ArrowDown', 's', 'S'] },
+                { name: 'left', keys: ['ArrowLeft', 'a', 'A'] },
+                {
+                  name: 'right',
+                  keys: ['ArrowRight', 'd', 'D'],
+                },
+                { name: 'dash', keys: ['Space'] },
+              ]}
+            >
               <Player />
               <Stage />
               <RigidBody type="fixed" colliders={false}>
                 <CuboidCollider position={[0, 0, 0]} args={[100, 2, 100]} />
               </RigidBody>
-            </Physics>
-          </Suspense>
-        </Canvas>
-      </KeyboardControls>
+            </KeyboardControls>
+          </Physics>
+        </Suspense>
+      </Canvas>
     </div>
   )
 }

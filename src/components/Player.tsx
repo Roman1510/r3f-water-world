@@ -10,7 +10,7 @@ import {
   RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier'
-import { SpotLight, Vector3, SpotLightHelper } from 'three'
+import { SpotLight, Vector3, SpotLightHelper, Mesh } from 'three'
 import { useCameraShake } from '../hooks/useCameraShake'
 
 const direction = new Vector3()
@@ -22,16 +22,15 @@ const MAX_VERTICAL_ANGLE = Math.PI / 8
 export function Player() {
   const ref = useRef<RapierRigidBody>(null)
   const spotlightRef = useRef<SpotLight>(null)
-
+  const targetRef = useRef<Mesh>(null)
   const [, get] = useKeyboardControls()
   useCameraShake(0.55, 1.4)
 
-  // Use MutableRefObject<SpotLight> and assert to correct type
-  useHelper(
-    spotlightRef as React.MutableRefObject<SpotLight>,
-    SpotLightHelper,
-    'cyan'
-  )
+  // useHelper(
+  //   spotlightRef as React.MutableRefObject<SpotLight>,
+  //   SpotLightHelper,
+  //   'cyan'
+  // )
 
   useFrame((state) => {
     const { forward, backward, left, right } = get()
@@ -53,23 +52,39 @@ export function Player() {
     direction
       .subVectors(frontVector, sideVector)
       .normalize()
-      .multiplyScalar(9)
       .applyQuaternion(state.camera.quaternion)
     ref.current!.setLinvel(
       { x: direction.x, y: velocity.y, z: direction.z },
       true
     )
 
+    // Update the target position to be in front of the camera
+    if (targetRef.current) {
+      const targetOffset = new Vector3(0, 0, -10).applyQuaternion(
+        state.camera.quaternion
+      )
+      targetRef.current.position.copy(state.camera.position).add(targetOffset)
+    }
+
     if (spotlightRef.current) {
       spotlightRef.current.position.copy(state.camera.position)
-      spotlightRef.current.rotation.copy(state.camera.rotation)
+      spotlightRef.current.target = targetRef.current!
+      spotlightRef.current.target.updateMatrixWorld()
     }
   })
 
   return (
     <>
       <ambientLight intensity={0.5} />
-
+      <spotLight
+        ref={spotlightRef}
+        intensity={1500}
+        distance={50}
+        angle={Math.PI / 10}
+        penumbra={0.045}
+        position={[0, 0, 0]}
+        color="yellow"
+      />
       <RigidBody
         ref={ref}
         colliders={false}
@@ -78,18 +93,13 @@ export function Player() {
         position={[0, 4, 0]}
         enabledRotations={[false, false, false]}
       >
-        <spotLight
-          ref={spotlightRef}
-          intensity={1500}
-          distance={100}
-          angle={Math.PI / 8}
-          penumbra={0.03}
-          position={[0, 0, 0]}
-          color="yellow"
-        />
         <CapsuleCollider args={[0.75, 1]} />
       </RigidBody>
       <PointerLockControls />
+      <mesh ref={targetRef} position={[0, 0, -10]} visible={false}>
+        <boxGeometry args={[0.1, 8, 8]} />
+        <meshBasicMaterial color="red" />
+      </mesh>
     </>
   )
 }
