@@ -1,13 +1,14 @@
-import { useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useRef, useEffect } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
 import { PointerLockControls, useKeyboardControls } from '@react-three/drei'
 import {
   CapsuleCollider,
   RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier'
-import { SpotLight, Vector3, Mesh } from 'three'
+import { SpotLight, Vector3, Mesh, SpotLightHelper } from 'three'
 import { useCameraShake } from '../hooks/useCameraShake'
+import { useControls } from 'leva'
 
 const direction = new Vector3()
 const frontVector = new Vector3()
@@ -24,6 +25,27 @@ export function Player() {
   const targetRef = useRef<Mesh>(null)
   const [, get] = useKeyboardControls()
   useCameraShake(0.55, 1.4)
+
+  const { scene } = useThree()
+
+  const { spotlight2OffsetX, spotlight2OffsetY, spotlight2OffsetZ } =
+    useControls({
+      spotlight2OffsetX: { value: 0, min: -150, max: 150, step: 0.1 },
+      spotlight2OffsetY: { value: -12, min: -150, max: 150, step: 0.1 },
+      spotlight2OffsetZ: { value: 75, min: -150, max: 150, step: 0.1 },
+    })
+
+  useEffect(() => {
+    if (spotlightRef1.current) {
+      const spotlightHelper1 = new SpotLightHelper(spotlightRef1.current)
+      scene.add(spotlightHelper1)
+    }
+
+    if (spotlightRef2.current) {
+      const spotlightHelper2 = new SpotLightHelper(spotlightRef2.current)
+      scene.add(spotlightHelper2)
+    }
+  }, [scene])
 
   useFrame((state) => {
     const { forward, backward, left, right, dash } = get()
@@ -64,11 +86,14 @@ export function Player() {
       spotlightRef1.current.target = targetRef.current!
       spotlightRef1.current.target.updateMatrixWorld()
 
-      const spotlight2Offset = new Vector3(0, 10, 25).applyQuaternion(
-        state.camera.quaternion
-      )
+      const spotlight2Offset = new Vector3(
+        spotlight2OffsetX,
+        spotlight2OffsetY,
+        spotlight2OffsetZ
+      ).applyQuaternion(state.camera.quaternion)
+
       spotlightRef2.current.position
-        .copy(state.camera.position)
+        .copy(targetRef.current!.position)
         .add(spotlight2Offset)
       spotlightRef2.current.target = targetRef.current!
       spotlightRef2.current.target.updateMatrixWorld()
@@ -82,18 +107,18 @@ export function Player() {
         ref={spotlightRef1}
         intensity={4500}
         distance={2500}
-        angle={Math.PI / 7}
+        angle={Math.PI / 7.5}
         penumbra={0.15}
         position={[0, 0, 0]}
         color="white"
       />
       <spotLight
         ref={spotlightRef2}
-        intensity={5500}
-        distance={2500}
-        angle={Math.PI / 7}
-        penumbra={0.01}
-        position={[0, 2, -2]}
+        intensity={15500}
+        distance={1500}
+        angle={Math.PI / 13}
+        penumbra={0.05}
+        position={[0, 2, -4]}
         color="white"
       />
       <RigidBody
@@ -107,8 +132,8 @@ export function Player() {
         <CapsuleCollider args={[0.75, 1]} />
       </RigidBody>
       <PointerLockControls />
-      <mesh ref={targetRef} position={[0, 0, -3]} visible={false}>
-        <boxGeometry args={[0.1, 8, 8]} />
+      <mesh ref={targetRef} position={[0, 0, -6]} visible={true}>
+        <boxGeometry args={[0.1, 0.1, 0.1]} />
       </mesh>
     </>
   )

@@ -14,7 +14,7 @@ export function Scene() {
         camera={{ fov: 30 }}
         onCreated={({ scene }) => {
           scene.background = new Color(0x000000)
-          scene.fog = new FogExp2(0x000000, 0.01)
+          scene.fog = new FogExp2(0x000000, 0.0015)
         }}
       >
         <Suspense fallback={<Loading />}>
@@ -34,7 +34,7 @@ export function Scene() {
               <Player />
               <Stage />
               <RigidBody type="fixed" colliders={false}>
-                <CuboidCollider position={[0, 0, 0]} args={[100, 2, 100]} />
+                <CuboidCollider position={[0, 0, 0]} args={[2000, 2, 2000]} />
               </RigidBody>
             </KeyboardControls>
           </Physics>
