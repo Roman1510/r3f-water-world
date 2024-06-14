@@ -1,12 +1,12 @@
-import { useRef, useEffect } from 'react'
-import { useFrame, useThree } from '@react-three/fiber'
+import { useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
 import { PointerLockControls, useKeyboardControls } from '@react-three/drei'
 import {
   CapsuleCollider,
   RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier'
-import { SpotLight, Vector3, Mesh, SpotLightHelper } from 'three'
+import { SpotLight, Vector3, Mesh } from 'three'
 import { useCameraShake } from '../hooks/useCameraShake'
 import { useControls } from 'leva'
 
@@ -14,9 +14,9 @@ const direction = new Vector3()
 const frontVector = new Vector3()
 const sideVector = new Vector3()
 
-const MAX_VERTICAL_ANGLE = Math.PI / 6.5
+const MAX_VERTICAL_ANGLE = Math.PI / 7.5
 const BASE_SPEED_MULTIPLIER = 12
-const DASH_SPEED_MULTIPLIER = 20
+const DASH_SPEED_MULTIPLIER = 20 * 10
 
 export function Player() {
   const ref = useRef<RapierRigidBody>(null)
@@ -26,26 +26,12 @@ export function Player() {
   const [, get] = useKeyboardControls()
   useCameraShake(0.55, 1.4)
 
-  const { scene } = useThree()
-
   const { spotlight2OffsetX, spotlight2OffsetY, spotlight2OffsetZ } =
     useControls({
       spotlight2OffsetX: { value: 0, min: -150, max: 150, step: 0.1 },
       spotlight2OffsetY: { value: -12, min: -150, max: 150, step: 0.1 },
       spotlight2OffsetZ: { value: 75, min: -150, max: 150, step: 0.1 },
     })
-
-  useEffect(() => {
-    if (spotlightRef1.current) {
-      const spotlightHelper1 = new SpotLightHelper(spotlightRef1.current)
-      scene.add(spotlightHelper1)
-    }
-
-    if (spotlightRef2.current) {
-      const spotlightHelper2 = new SpotLightHelper(spotlightRef2.current)
-      scene.add(spotlightHelper2)
-    }
-  }, [scene])
 
   useFrame((state) => {
     const { forward, backward, left, right, dash } = get()
@@ -102,7 +88,7 @@ export function Player() {
 
   return (
     <>
-      <ambientLight intensity={0.2} />
+      <ambientLight intensity={0.25} />
       <spotLight
         ref={spotlightRef1}
         intensity={4500}
@@ -114,8 +100,8 @@ export function Player() {
       />
       <spotLight
         ref={spotlightRef2}
-        intensity={15500}
-        distance={1500}
+        intensity={155500}
+        distance={4500}
         angle={Math.PI / 13}
         penumbra={0.05}
         position={[0, 2, -4]}
@@ -132,7 +118,7 @@ export function Player() {
         <CapsuleCollider args={[0.75, 1]} />
       </RigidBody>
       <PointerLockControls />
-      <mesh ref={targetRef} position={[0, 0, -6]} visible={true}>
+      <mesh ref={targetRef} position={[0, 0, -6]} visible={false}>
         <boxGeometry args={[0.1, 0.1, 0.1]} />
       </mesh>
     </>

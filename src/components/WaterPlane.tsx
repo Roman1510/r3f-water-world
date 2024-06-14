@@ -12,7 +12,7 @@ export const WaterPlane: React.FC = () => {
 
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -30, 0]}>
-      <planeGeometry args={[2000, 2000, 2000, 2000]} />
+      <planeGeometry args={[5000, 5000]} />
       <meshStandardMaterial map={texture} roughnessMap={roughnessMap} />
     </mesh>
   )

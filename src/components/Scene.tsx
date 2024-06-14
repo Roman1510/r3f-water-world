@@ -11,7 +11,7 @@ export function Scene() {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Canvas
-        camera={{ fov: 30 }}
+        camera={{ fov: 40 }}
         onCreated={({ scene }) => {
           scene.background = new Color(0x000000)
           scene.fog = new FogExp2(0x000000, 0.0015)
@@ -34,7 +34,7 @@ export function Scene() {
               <Player />
               <Stage />
               <RigidBody type="fixed" colliders={false}>
-                <CuboidCollider position={[0, 0, 0]} args={[2000, 2, 2000]} />
+                <CuboidCollider position={[0, 0, 0]} args={[2500, 2, 2500]} />
               </RigidBody>
             </KeyboardControls>
           </Physics>
