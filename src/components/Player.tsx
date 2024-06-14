@@ -71,7 +71,7 @@ export function Player() {
       <spotLight
         ref={spotlightRef}
         intensity={4500}
-        distance={500}
+        distance={2500}
         angle={Math.PI / 10}
         penumbra={0.15}
         position={[0, 0, 0]}

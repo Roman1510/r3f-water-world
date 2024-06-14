@@ -11,7 +11,7 @@ export const WaterPlane: React.FC = () => {
   roughnessMap.repeat.set(16, 16)
 
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -10, 0]}>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -30, 0]}>
       <planeGeometry args={[2000, 2000, 2000, 2000]} />
       <meshStandardMaterial map={texture} roughnessMap={roughnessMap} />
     </mesh>
