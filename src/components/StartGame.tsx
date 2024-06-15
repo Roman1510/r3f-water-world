@@ -1,14 +1,16 @@
 import styled from 'styled-components'
 
 interface IProps {
-  setReady: (ready: boolean) => void
+  setReady: () => void
+  title: string
+  buttonText: string
 }
 
-export const StartGame = ({ setReady }: IProps) => (
+export const StartGame = ({ setReady, title, buttonText }: IProps) => (
   <Container>
     <Content>
-      <Title>You can start under the sea experience right now</Title>
-      <StartButton onClick={() => setReady(true)}>Let's go</StartButton>
+      <Title>{title}</Title>
+      <StartButton onClick={setReady}>{buttonText}</StartButton>
     </Content>
   </Container>
 )

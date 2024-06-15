@@ -1,33 +1,17 @@
-import { KeyboardControls } from '@react-three/drei'
+import { useState, useRef } from 'react'
+import { Html, KeyboardControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Physics } from '@react-three/rapier'
-import { Suspense, useEffect, useRef } from 'react'
+import { Suspense } from 'react'
 import { Loading } from './Loading'
 import { Stage } from './Stage'
 import { Color, FogExp2 } from 'three'
+import { StartGame } from './StartGame'
 
 export function Scene() {
+  const [ready, setReady] = useState(false)
+  const [paused, setPaused] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-
-  useEffect(() => {
-    const handlePointerDown = () => {
-      const canvas = canvasRef.current
-      if (canvas) {
-        canvas.requestPointerLock()
-      }
-    }
-
-    const canvasElement = canvasRef.current
-    if (canvasElement) {
-      canvasElement.addEventListener('pointerdown', handlePointerDown)
-    }
-
-    return () => {
-      if (canvasElement) {
-        canvasElement.removeEventListener('pointerdown', handlePointerDown)
-      }
-    }
-  }, [])
 
   const keyboardControls = [
     { name: 'forward', keys: ['ArrowUp', 'w', 'W'] },
@@ -38,7 +22,7 @@ export function Scene() {
   ]
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <Canvas
         ref={canvasRef}
         camera={{ fov: 40 }}
@@ -53,18 +37,46 @@ export function Scene() {
           depth: false,
           alpha: false,
         }}
-        onPointerDown={(e) => {
-          const canvas = e.target as HTMLCanvasElement
-          canvas.requestPointerLock()
-        }}
       >
         <Suspense fallback={<Loading />}>
-          <Physics gravity={[0, -1, 0]}>
-            <KeyboardControls map={keyboardControls}>
-              <Stage />
-            </KeyboardControls>
-          </Physics>
+          {ready && !paused && (
+            <Physics gravity={[0, -1, 0]}>
+              <KeyboardControls map={keyboardControls}>
+                <Stage />
+              </KeyboardControls>
+            </Physics>
+          )}
         </Suspense>
+        <Html>
+          {(!ready || paused) && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'black',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <StartGame
+                setReady={() => {
+                  setReady(true)
+                  setPaused(false)
+                }}
+                title={
+                  paused
+                    ? 'You can continue of course'
+                    : 'You can start under the sea experience right now'
+                }
+                buttonText="Let's go"
+              />
+            </div>
+          )}
+        </Html>
       </Canvas>
     </div>
   )
