@@ -53,6 +53,10 @@ export function Scene() {
           depth: false,
           alpha: false,
         }}
+        onPointerDown={(e) => {
+          const canvas = e.target as HTMLCanvasElement
+          canvas.requestPointerLock()
+        }}
       >
         <Suspense fallback={<Loading />}>
           <Physics gravity={[0, -1, 0]}>

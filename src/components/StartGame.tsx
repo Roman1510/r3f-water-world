@@ -13,7 +13,6 @@ export const StartGame = ({ setReady }: IProps) => (
   </Container>
 )
 
-// Styled components
 const Container = styled.div`
   position: relative;
   height: 100vh;
