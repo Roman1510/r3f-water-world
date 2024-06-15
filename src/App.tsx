@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { Landing } from './components/Landing'
+import { StartGame } from './components/StartGame'
 import { Scene } from './components/Scene'
 
 export function App() {
-  const [ready, setReady] = useState(false)
+  const [start, setStart] = useState(false)
   return (
     <div className="canvas-wrapper">
-      {!ready && <Landing setReady={setReady} />}
-      {ready && <Scene />}
+      {!start && <StartGame setReady={setStart} />}
+      {start && <Scene />}
     </div>
   )
 }
