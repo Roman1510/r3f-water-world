@@ -4,13 +4,30 @@ interface IProps {
   title: string
 }
 
-export const StartGame = ({ title }: IProps) => (
-  <Container>
-    <Content>
-      <Title>{title}</Title>
-    </Content>
-  </Container>
-)
+export const StartGame = ({ title }: IProps) => {
+  console.log('startgame rendered')
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 999999,
+      }}
+    >
+      <Container>
+        <Content>
+          <Title>{title}</Title>
+        </Content>
+      </Container>
+    </div>
+  )
+}
 
 const Container = styled.div`
   position: relative;
@@ -18,7 +35,6 @@ const Container = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  background-size: cover;
 `
 
 const Content = styled.div`

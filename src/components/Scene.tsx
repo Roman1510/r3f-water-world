@@ -27,72 +27,53 @@ export function Scene() {
   }
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
-      <Canvas
-        ref={canvasRef}
-        camera={{ fov: 40 }}
-        onCreated={({ scene }) => {
-          scene.background = new Color(0x000000)
-          scene.fog = new FogExp2(0x000000, 0.0015)
-        }}
-        gl={{
-          powerPreference: 'high-performance',
-          antialias: false,
-          stencil: false,
-          depth: false,
-          alpha: false,
-        }}
-        onMouseDown={() => {
-          if (!ready) {
-            handleStartGame()
-          }
-        }}
-      >
-        <Suspense fallback={<Loading />}>
-          {ready && (
-            <Physics gravity={[0, -1, 0]}>
-              <KeyboardControls map={keyboardControls}>
-                <Stage />
-              </KeyboardControls>
-            </Physics>
+    <Canvas
+      ref={canvasRef}
+      camera={{ fov: 40 }}
+      onCreated={({ scene }) => {
+        scene.background = new Color(0x000000)
+        scene.fog = new FogExp2(0x000000, 0.0015)
+      }}
+      gl={{
+        powerPreference: 'high-performance',
+        antialias: false,
+        stencil: false,
+        depth: false,
+        alpha: false,
+      }}
+    >
+      <Suspense fallback={<Loading />}>
+        {ready && (
+          <Physics gravity={[0, -4, 0]}>
+            <KeyboardControls map={keyboardControls}>
+              <Stage />
+            </KeyboardControls>
+          </Physics>
+        )}
+        <Html>
+          {(!ready || paused) && (
+            <StartGame
+              title={
+                paused
+                  ? 'You can continue of course, just click on the screen.'
+                  : 'You can start under the sea experience right now, but you have to click on the screen.'
+              }
+            />
           )}
-          <Html>
-            {(!ready || paused) && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'black',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <StartGame
-                  title={
-                    paused
-                      ? 'You can continue of course, just click on the screen.'
-                      : 'You can start under the sea experience right now, but you have to click on the screen.'
-                  }
-                />
-              </div>
-            )}
-          </Html>
-        </Suspense>
+        </Html>
         <PointerLockControls
+          domElement={canvasRef.current!}
           onLock={() => {
             console.log('lock')
             setPaused(false)
+            handleStartGame()
           }}
           onUnlock={() => {
             console.log('unlock')
             setPaused(true)
           }}
         />
-      </Canvas>
-    </div>
+      </Suspense>
+    </Canvas>
   )
 }
