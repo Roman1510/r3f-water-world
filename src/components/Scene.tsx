@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Html, KeyboardControls } from '@react-three/drei'
+import { Html, KeyboardControls, PointerLockControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Physics } from '@react-three/rapier'
 import { Suspense } from 'react'
@@ -24,10 +24,6 @@ export function Scene() {
   const handleStartGame = () => {
     setReady(true)
     setPaused(false)
-    if (canvasRef.current) {
-      canvasRef.current.requestPointerLock()
-      canvasRef.current.focus()
-    }
   }
 
   useEffect(() => {
@@ -102,6 +98,7 @@ export function Scene() {
             )}
           </Html>
         </Suspense>
+        <PointerLockControls />
       </Canvas>
     </div>
   )

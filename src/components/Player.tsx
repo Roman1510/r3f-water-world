@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { PointerLockControls, useKeyboardControls } from '@react-three/drei'
+import { useKeyboardControls } from '@react-three/drei'
 import {
   CapsuleCollider,
   RapierRigidBody,
@@ -117,7 +117,7 @@ export function Player() {
       >
         <CapsuleCollider args={[0.75, 1]} />
       </RigidBody>
-      <PointerLockControls />
+
       <mesh ref={targetRef} position={[0, 0, -6]} visible={false}>
         <boxGeometry args={[0.1, 0.1, 0.1]} />
       </mesh>
