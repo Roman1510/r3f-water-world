@@ -1,16 +1,13 @@
 import styled from 'styled-components'
 
 interface IProps {
-  setReady: () => void
   title: string
-  buttonText: string
 }
 
-export const StartGame = ({ setReady, title, buttonText }: IProps) => (
+export const StartGame = ({ title }: IProps) => (
   <Container>
     <Content>
       <Title>{title}</Title>
-      <StartButton onClick={setReady}>{buttonText}</StartButton>
     </Content>
   </Container>
 )
@@ -35,24 +32,4 @@ const Title = styled.h1`
   text-shadow: 2px 2px 8px #000;
   font-family: 'Creepster', cursive;
   margin-bottom: 20px;
-`
-
-const StartButton = styled.button`
-  font-size: 1.5rem;
-  color: #fff;
-  background-color: #000;
-  padding: 15px 30px;
-  border: 2px solid #ff3333;
-  border-radius: 5px;
-  cursor: pointer;
-  text-transform: uppercase;
-  font-family: 'Creepster', cursive;
-  transition: all 0.3s ease;
-  text-shadow: 2px 2px 8px #ff3333;
-
-  &:hover {
-    background-color: #ff3333;
-    color: #000;
-    text-shadow: 2px 2px 8px #000;
-  }
 `

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Html, KeyboardControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Physics } from '@react-three/rapier'
@@ -30,6 +30,22 @@ export function Scene() {
     }
   }
 
+  useEffect(() => {
+    const handlePointerLockChange = () => {
+      console.log(document.pointerLockElement, 'pointerlockelement')
+      const isLocked = document.pointerLockElement === null
+      if (isLocked) {
+        // setPaused(true)
+      }
+    }
+
+    document.addEventListener('pointerlockchange', handlePointerLockChange)
+
+    return () => {
+      document.removeEventListener('pointerlockchange', handlePointerLockChange)
+    }
+  }, [])
+
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <Canvas
@@ -60,34 +76,32 @@ export function Scene() {
               </KeyboardControls>
             </Physics>
           )}
+          <Html>
+            {(!ready || paused) && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: 'black',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <StartGame
+                  title={
+                    paused
+                      ? 'You can continue of course, just click on the screen.'
+                      : 'You can start under the sea experience right now, but you have to click on the screen.'
+                  }
+                />
+              </div>
+            )}
+          </Html>
         </Suspense>
-        <Html>
-          {(!ready || paused) && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'black',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <StartGame
-                setReady={handleStartGame}
-                title={
-                  paused
-                    ? 'You can continue of course'
-                    : 'You can start under the sea experience right now'
-                }
-                buttonText="Let's go"
-              />
-            </div>
-          )}
-        </Html>
       </Canvas>
     </div>
   )
