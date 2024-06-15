@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { Html, KeyboardControls, PointerLockControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Physics } from '@react-three/rapier'
@@ -26,22 +26,6 @@ export function Scene() {
     setPaused(false)
   }
 
-  useEffect(() => {
-    const handlePointerLockChange = () => {
-      console.log(document.pointerLockElement, 'pointerlockelement')
-      const isLocked = document.pointerLockElement === null
-      if (isLocked) {
-        // setPaused(true)
-      }
-    }
-
-    document.addEventListener('pointerlockchange', handlePointerLockChange)
-
-    return () => {
-      document.removeEventListener('pointerlockchange', handlePointerLockChange)
-    }
-  }, [])
-
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <Canvas
@@ -65,7 +49,7 @@ export function Scene() {
         }}
       >
         <Suspense fallback={<Loading />}>
-          {ready && !paused && (
+          {ready && (
             <Physics gravity={[0, -1, 0]}>
               <KeyboardControls map={keyboardControls}>
                 <Stage />
@@ -98,7 +82,16 @@ export function Scene() {
             )}
           </Html>
         </Suspense>
-        <PointerLockControls />
+        <PointerLockControls
+          onLock={() => {
+            console.log('lock')
+            setPaused(false)
+          }}
+          onUnlock={() => {
+            console.log('unlock')
+            setPaused(true)
+          }}
+        />
       </Canvas>
     </div>
   )
