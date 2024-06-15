@@ -21,6 +21,15 @@ export function Scene() {
     { name: 'dash', keys: ['Space'] },
   ]
 
+  const handleStartGame = () => {
+    setReady(true)
+    setPaused(false)
+    if (canvasRef.current) {
+      canvasRef.current.requestPointerLock()
+      canvasRef.current.focus()
+    }
+  }
+
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <Canvas
@@ -36,6 +45,11 @@ export function Scene() {
           stencil: false,
           depth: false,
           alpha: false,
+        }}
+        onMouseDown={() => {
+          if (!ready) {
+            handleStartGame()
+          }
         }}
       >
         <Suspense fallback={<Loading />}>
@@ -63,10 +77,7 @@ export function Scene() {
               }}
             >
               <StartGame
-                setReady={() => {
-                  setReady(true)
-                  setPaused(false)
-                }}
+                setReady={handleStartGame}
                 title={
                   paused
                     ? 'You can continue of course'
