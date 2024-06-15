@@ -71,6 +71,7 @@ export function Scene() {
           onUnlock={() => {
             console.log('unlock')
             setPaused(true)
+            setReady(false)
           }}
         />
       </Suspense>
