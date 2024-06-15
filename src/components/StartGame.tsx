@@ -5,7 +5,7 @@ interface IProps {
 }
 
 export const StartGame = ({ title }: IProps) => {
-  console.log('startgame rendered')
+  console.log('startgame rendered, title:', title)
   return (
     <div
       style={{
