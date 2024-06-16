@@ -1,6 +1,5 @@
 import { Player } from './Player'
 import { WaterPlane } from './WaterPlane'
-import { Instances, Instance } from '@react-three/drei'
 import { Vector3 } from 'three'
 
 export function Stage() {
@@ -20,16 +19,12 @@ export function Stage() {
       <Player />
       <WaterPlane />
 
-      <Instances limit={numBoxes}>
-        {floatingBoxesPositions.map((position, index) => (
-          <Instance key={index} position={position}>
-            <mesh>
-              <boxGeometry args={[1, 1, 1]} />
-              <meshStandardMaterial color="darkgrey" />
-            </mesh>
-          </Instance>
-        ))}
-      </Instances>
+      {floatingBoxesPositions.map((position, index) => (
+        <mesh position={position} key={index}>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color="darkgrey" />
+        </mesh>
+      ))}
     </>
   )
 }

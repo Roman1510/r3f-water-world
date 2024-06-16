@@ -30,83 +30,80 @@ export function Player() {
   const { spotlight2OffsetX, spotlight2OffsetY, spotlight2OffsetZ } =
     useControls({
       spotlight2OffsetX: { value: 0, min: -150, max: 150, step: 0.1 },
-      spotlight2OffsetY: { value: 0, min: -150, max: 150, step: 0.1 },
-      spotlight2OffsetZ: { value: 75, min: -150, max: 150, step: 0.1 },
+      spotlight2OffsetY: { value: -8, min: -150, max: 150, step: 0.1 },
+      spotlight2OffsetZ: { value: 60, min: -150, max: 150, step: 0.1 },
     })
 
   useFrame((state) => {
-    const { forward, backward, left, right, dash } = get()
-    const velocity = ref.current!.linvel()
+    if (ref.current) {
+      const { forward, backward, left, right, dash } = get()
+      const velocity = ref.current!.linvel()
 
-    state.camera.rotation.order = 'YXZ'
-    const cameraRotation = state.camera.rotation.x
-    if (cameraRotation > MAX_VERTICAL_ANGLE) {
-      state.camera.rotation.x = MAX_VERTICAL_ANGLE
-    } else if (cameraRotation < -MAX_VERTICAL_ANGLE) {
-      state.camera.rotation.x = -MAX_VERTICAL_ANGLE
-    }
+      state.camera.rotation.order = 'YXZ'
+      const cameraRotation = state.camera.rotation.x
+      if (cameraRotation > MAX_VERTICAL_ANGLE) {
+        state.camera.rotation.x = MAX_VERTICAL_ANGLE
+      } else if (cameraRotation < -MAX_VERTICAL_ANGLE) {
+        state.camera.rotation.x = -MAX_VERTICAL_ANGLE
+      }
 
-    const { x, y, z } = ref.current!.translation()
-    state.camera.position.set(x, y, z)
+      const { x, y, z } = ref.current!.translation()
+      state.camera.position.set(x, y, z)
 
-    frontVector.set(0, 0, +backward - +forward)
-    sideVector.set(+left - +right, 0, 0)
-    direction
-      .subVectors(frontVector, sideVector)
-      .normalize()
-      .multiplyScalar(dash ? DASH_SPEED_MULTIPLIER : BASE_SPEED_MULTIPLIER)
-      .applyQuaternion(state.camera.quaternion)
-    ref.current!.setLinvel(
-      { x: direction.x, y: velocity.y, z: direction.z },
-      true
-    )
-
-    if (targetRef.current) {
-      const targetOffset = new Vector3(0, 0, -5).applyQuaternion(
-        state.camera.quaternion
+      frontVector.set(0, 0, +backward - +forward)
+      sideVector.set(+left - +right, 0, 0)
+      direction
+        .subVectors(frontVector, sideVector)
+        .normalize()
+        .multiplyScalar(dash ? DASH_SPEED_MULTIPLIER : BASE_SPEED_MULTIPLIER)
+        .applyQuaternion(state.camera.quaternion)
+      ref.current!.setLinvel(
+        { x: direction.x, y: velocity.y, z: direction.z },
+        true
       )
-      targetRef.current.position.copy(state.camera.position).add(targetOffset)
-    }
 
-    if (spotlightRef1.current && spotlightRef2.current && targetRef.current) {
-      spotlightRef1.current.position.copy(state.camera.position)
-      spotlightRef1.current.target = targetRef.current!
-      spotlightRef1.current.target.updateMatrixWorld()
+      if (targetRef.current) {
+        const targetOffset = new Vector3(0, 0, -70).applyQuaternion(
+          state.camera.quaternion
+        )
+        targetRef.current.position.copy(state.camera.position).add(targetOffset)
+      }
 
-      const spotlight2Offset = new Vector3(
-        spotlight2OffsetX,
-        spotlight2OffsetY,
-        spotlight2OffsetZ
-      ).applyQuaternion(state.camera.quaternion)
+      if (spotlightRef1.current && spotlightRef2.current && targetRef.current) {
+        spotlightRef1.current.position.copy(state.camera.position)
+        spotlightRef1.current.target = targetRef.current!
+        spotlightRef1.current.target.updateMatrixWorld()
 
-      spotlightRef2.current.position
-        .copy(targetRef.current!.position)
-        .add(spotlight2Offset)
-      spotlightRef2.current.target = targetRef.current!
-      spotlightRef2.current.target.updateMatrixWorld()
+        const spotlight2Offset = new Vector3(
+          spotlight2OffsetX,
+          spotlight2OffsetY,
+          spotlight2OffsetZ
+        ).applyQuaternion(state.camera.quaternion)
+
+        spotlightRef2.current.position
+          .copy(targetRef.current!.position)
+          .add(spotlight2Offset)
+        spotlightRef2.current.target = targetRef.current!
+        spotlightRef2.current.target.updateMatrixWorld()
+      }
     }
   })
 
   return (
     <>
-      <hemisphereLight
-        groundColor="lightblue"
-        color="darkgreen"
-        intensity={2.5}
-      />
       <SpotLight
         ref={spotlightRef1}
-        intensity={2500}
-        distance={400}
-        angle={Math.PI / 3.5}
-        penumbra={0.15}
+        intensity={3500}
+        distance={300}
+        angle={Math.PI / 4.1}
+        penumbra={0.2}
         color="yellow"
       />
       <SpotLight
         ref={spotlightRef2}
         intensity={140000}
-        distance={800}
-        angle={Math.PI / 11.5}
+        distance={600}
+        angle={Math.PI / 9.5}
         penumbra={0.05}
         color="white"
       />
@@ -122,7 +119,7 @@ export function Player() {
       </RigidBody>
 
       <mesh ref={targetRef} position={[0, 0, -6]} visible={false}>
-        <boxGeometry args={[0.1, 0.1, 0.1]} />
+        <boxGeometry args={[1, 1, 1]} />
       </mesh>
     </>
   )

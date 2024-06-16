@@ -20,7 +20,7 @@ export const WaterPlane = () => {
           position={[0, -30, 0]}
         >
           <planeGeometry args={[5000, 5000]} />
-          <meshStandardMaterial map={texture} roughnessMap={roughnessMap} />
+          <meshPhysicalMaterial map={texture} roughnessMap={roughnessMap} />
         </mesh>
       </CuboidCollider>
     </RigidBody>
