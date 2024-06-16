@@ -10,11 +10,14 @@ import { Stage } from './Stage'
 import { keyboardControls } from '../const/keyboardControls'
 import { useGame } from '../hooks/useGame'
 import {
+  DepthOfField,
   // ChromaticAberration,
   EffectComposer,
   Noise,
+  WaterEffect,
 } from '@react-three/postprocessing' // Import the required components
 import { BlendFunction } from 'postprocessing'
+import { useControls } from 'leva'
 // import { Vector2 } from 'three'
 
 export const Scene: React.FC<{
@@ -31,12 +34,22 @@ export const Scene: React.FC<{
     setPause(true)
   }, [setPause])
   // const offset: Vector2 = new Vector2(0.01, 0.02)
+
+  const { focusDistance, focalLength, bokehScale, height } = useControls(
+    'DepthOfField',
+    {
+      focusDistance: { value: 0.012, min: 0, max: 30, step: 0.01 },
+      focalLength: { value: 0.15, min: 0, max: 1, step: 0.01 },
+      bokehScale: { value: 9, min: 0, max: 10, step: 0.1 },
+      height: { value: 700, min: 0, max: 1000, step: 10 },
+    }
+  )
   return (
     <>
       <Environment
         background={false}
         preset="night"
-        environmentIntensity={0.035}
+        environmentIntensity={0.025}
       />
       <Physics gravity={[0, -10, 0]}>
         <KeyboardControls map={keyboardControls}>
@@ -56,7 +69,7 @@ export const Scene: React.FC<{
         }}
       />
       {ready && (
-        <EffectComposer>
+        <EffectComposer enableNormalPass={false} multisampling={4}>
           <Noise blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.1} />
           {/* <ChromaticAberration
             blendFunction={BlendFunction.SOFT_LIGHT}
@@ -64,6 +77,13 @@ export const Scene: React.FC<{
             radialModulation={false}
             modulationOffset={0.001}
           /> */}
+          <DepthOfField
+            focusDistance={focusDistance}
+            focalLength={focalLength}
+            bokehScale={bokehScale}
+            height={height}
+          />
+          <WaterEffect />
         </EffectComposer>
       )}
     </>
