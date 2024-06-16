@@ -6,7 +6,7 @@ import {
   RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier'
-import { SpotLight as SpotLightImpl, Vector3, Mesh } from 'three'
+import { SpotLight as SpotLightImpl, Vector3, Mesh, Color } from 'three'
 import { useCameraShake } from '../hooks/useCameraShake'
 import { useControls } from 'leva'
 
@@ -97,7 +97,7 @@ export function Player() {
         distance={250}
         angle={Math.PI / 4.1}
         penumbra={0.2}
-        color="darkblue"
+        color={0xede8ba}
       />
       <SpotLight
         ref={spotlightRef2}
@@ -105,7 +105,7 @@ export function Player() {
         distance={550}
         angle={Math.PI / 9.5}
         penumbra={0.05}
-        color="white"
+        color="beige"
       />
       <RigidBody
         ref={ref}
