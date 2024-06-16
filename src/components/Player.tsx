@@ -6,7 +6,7 @@ import {
   RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier'
-import { SpotLight, Vector3, Mesh } from 'three'
+import { SpotLight, HemisphereLight, Vector3, Mesh } from 'three'
 import { useCameraShake } from '../hooks/useCameraShake'
 import { useControls } from 'leva'
 
@@ -22,6 +22,7 @@ export function Player() {
   const ref = useRef<RapierRigidBody>(null)
   const spotlightRef1 = useRef<SpotLight>(null)
   const spotlightRef2 = useRef<SpotLight>(null)
+
   const targetRef = useRef<Mesh>(null)
   const [, get] = useKeyboardControls()
   useCameraShake(0.55, 1.4)
@@ -67,7 +68,7 @@ export function Player() {
       targetRef.current.position.copy(state.camera.position).add(targetOffset)
     }
 
-    if (spotlightRef1.current && spotlightRef2.current) {
+    if (spotlightRef1.current && spotlightRef2.current && targetRef.current) {
       spotlightRef1.current.position.copy(state.camera.position)
       spotlightRef1.current.target = targetRef.current!
       spotlightRef1.current.target.updateMatrixWorld()
@@ -88,14 +89,17 @@ export function Player() {
 
   return (
     <>
-      <ambientLight intensity={0.25} />
+      <hemisphereLight
+        groundColor="lightblue"
+        color="darkgreen"
+        intensity={1}
+      />
       <spotLight
         ref={spotlightRef1}
         intensity={4500}
         distance={2500}
         angle={Math.PI / 7.5}
         penumbra={0.15}
-        position={[0, 0, 0]}
         color="white"
       />
       <spotLight
@@ -104,7 +108,6 @@ export function Player() {
         distance={4500}
         angle={Math.PI / 13}
         penumbra={0.05}
-        position={[0, 2, -4]}
         color="white"
       />
       <RigidBody

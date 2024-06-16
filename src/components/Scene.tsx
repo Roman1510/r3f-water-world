@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { KeyboardControls, PointerLockControls } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
 import { MutableRefObject } from 'react'
@@ -15,9 +15,7 @@ export const Scene: React.FC<{
 
   const [ready, setReady] = useState(false)
   const { setPause } = useGame()
-  useEffect(() => {
-    setPause(true)
-  }, [setPause])
+
   return (
     <>
       <Physics gravity={[0, -4, 0]}>
@@ -28,13 +26,11 @@ export const Scene: React.FC<{
       <PointerLockControls
         domElement={canvasRef.current!}
         onLock={() => {
-          console.log('lock')
           setReady(true)
           handleStartGame()
           setPause(false)
         }}
         onUnlock={() => {
-          console.log('unlock')
           setReady(false)
           setPause(true)
         }}
