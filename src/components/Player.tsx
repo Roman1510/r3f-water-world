@@ -31,7 +31,7 @@ export function Player() {
     useControls({
       spotlight2OffsetX: { value: 0, min: -150, max: 150, step: 0.1 },
       spotlight2OffsetY: { value: -8, min: -150, max: 150, step: 0.1 },
-      spotlight2OffsetZ: { value: 60, min: -150, max: 150, step: 0.1 },
+      spotlight2OffsetZ: { value: 85, min: -150, max: 150, step: 0.1 },
     })
 
   useFrame((state) => {
@@ -93,16 +93,16 @@ export function Player() {
     <>
       <SpotLight
         ref={spotlightRef1}
-        intensity={3500}
-        distance={300}
+        intensity={2500}
+        distance={250}
         angle={Math.PI / 4.1}
         penumbra={0.2}
         color="yellow"
       />
       <SpotLight
         ref={spotlightRef2}
-        intensity={140000}
-        distance={600}
+        intensity={130000}
+        distance={550}
         angle={Math.PI / 9.5}
         penumbra={0.05}
         color="white"

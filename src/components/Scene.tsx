@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
-import { KeyboardControls, PointerLockControls } from '@react-three/drei'
+import {
+  Environment,
+  KeyboardControls,
+  PointerLockControls,
+} from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
 import { MutableRefObject } from 'react'
 import { Stage } from './Stage'
@@ -29,7 +33,12 @@ export const Scene: React.FC<{
   // const offset: Vector2 = new Vector2(0.01, 0.02)
   return (
     <>
-      <Physics gravity={[0, -4, 0]}>
+      <Environment
+        background={false}
+        preset="night"
+        environmentIntensity={0.035}
+      />
+      <Physics gravity={[0, -10, 0]}>
         <KeyboardControls map={keyboardControls}>
           {ready ? <Stage /> : null}
         </KeyboardControls>
