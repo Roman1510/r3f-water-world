@@ -14,7 +14,11 @@ export const WaterPlane = () => {
   return (
     <RigidBody type="fixed" colliders={false}>
       <CuboidCollider position={[0, 0, 0]} args={[2500, 2, 2500]}>
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -30, 0]}>
+        <mesh
+          receiveShadow
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, -30, 0]}
+        >
           <planeGeometry args={[5000, 5000]} />
           <meshStandardMaterial map={texture} roughnessMap={roughnessMap} />
         </mesh>

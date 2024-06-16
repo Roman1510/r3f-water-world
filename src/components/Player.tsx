@@ -1,12 +1,12 @@
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useKeyboardControls } from '@react-three/drei'
+import { useKeyboardControls, SpotLight } from '@react-three/drei'
 import {
   CapsuleCollider,
   RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier'
-import { SpotLight, HemisphereLight, Vector3, Mesh } from 'three'
+import { SpotLight as SpotLightImpl, Vector3, Mesh } from 'three'
 import { useCameraShake } from '../hooks/useCameraShake'
 import { useControls } from 'leva'
 
@@ -20,8 +20,8 @@ const DASH_SPEED_MULTIPLIER = 20 * 10
 
 export function Player() {
   const ref = useRef<RapierRigidBody>(null)
-  const spotlightRef1 = useRef<SpotLight>(null)
-  const spotlightRef2 = useRef<SpotLight>(null)
+  const spotlightRef1 = useRef<SpotLightImpl>(null)
+  const spotlightRef2 = useRef<SpotLightImpl>(null)
 
   const targetRef = useRef<Mesh>(null)
   const [, get] = useKeyboardControls()
@@ -30,7 +30,7 @@ export function Player() {
   const { spotlight2OffsetX, spotlight2OffsetY, spotlight2OffsetZ } =
     useControls({
       spotlight2OffsetX: { value: 0, min: -150, max: 150, step: 0.1 },
-      spotlight2OffsetY: { value: -12, min: -150, max: 150, step: 0.1 },
+      spotlight2OffsetY: { value: 0, min: -150, max: 150, step: 0.1 },
       spotlight2OffsetZ: { value: 75, min: -150, max: 150, step: 0.1 },
     })
 
@@ -92,21 +92,21 @@ export function Player() {
       <hemisphereLight
         groundColor="lightblue"
         color="darkgreen"
-        intensity={1}
+        intensity={2.5}
       />
-      <spotLight
+      <SpotLight
         ref={spotlightRef1}
-        intensity={4500}
-        distance={2500}
-        angle={Math.PI / 7.5}
+        intensity={2500}
+        distance={400}
+        angle={Math.PI / 3.5}
         penumbra={0.15}
-        color="white"
+        color="yellow"
       />
-      <spotLight
+      <SpotLight
         ref={spotlightRef2}
-        intensity={155500}
-        distance={4500}
-        angle={Math.PI / 13}
+        intensity={140000}
+        distance={800}
+        angle={Math.PI / 11.5}
         penumbra={0.05}
         color="white"
       />
