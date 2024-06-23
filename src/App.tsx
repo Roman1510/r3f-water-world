@@ -9,7 +9,7 @@ export function App() {
       <GameProvider>
         <Overlay />
         <CanvasWrapper />
-        <Leva hidden />
+        <Leva />
       </GameProvider>
     </>
   )

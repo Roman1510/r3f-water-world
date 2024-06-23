@@ -38,10 +38,10 @@ export const Scene: React.FC<{
   const { focusDistance, focalLength, bokehScale, height } = useControls(
     'DepthOfField',
     {
-      focusDistance: { value: 0.012, min: 0, max: 30, step: 0.01 },
-      focalLength: { value: 0.15, min: 0, max: 1, step: 0.01 },
-      bokehScale: { value: 9, min: 0, max: 10, step: 0.1 },
-      height: { value: 700, min: 0, max: 1000, step: 10 },
+      focusDistance: { value: 0.032, min: 0, max: 30, step: 0.01 },
+      focalLength: { value: 0.16, min: 0, max: 1, step: 0.01 },
+      bokehScale: { value: 10, min: 0, max: 10, step: 0.1 },
+      height: { value: 800, min: 0, max: 1000, step: 10 },
     }
   )
   return (
