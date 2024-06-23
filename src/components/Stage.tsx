@@ -17,7 +17,9 @@ export function Stage() {
     })
   }, [numSeaweeds, planeScale])
 
-  const { scene: seaweedModel } = useGLTF('/new-seaweed.glb')
+  const { scene: seaweedModel } = useGLTF(
+    'https://roman1510.github.io/files/seaweed.glb'
+  )
 
   seaweedModel.scale.set(5, 5, 5)
 
@@ -37,4 +39,4 @@ export function Stage() {
   )
 }
 
-useGLTF.preload('/new-seaweed.glb')
+useGLTF.preload('https://roman1510.github.io/files/seaweed.glb')
