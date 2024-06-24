@@ -64,8 +64,8 @@ export const Scene: React.FC<{
           setPause(false)
         }}
         onUnlock={() => {
-          // setReady(false)
-          // setPause(true)
+          setReady(false)
+          setPause(true)
         }}
       />
       {ready && (

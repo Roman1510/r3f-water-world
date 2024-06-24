@@ -7,23 +7,29 @@ const Overlay = () => {
   const { pause, level, gameOver } = useGame()
   const musicRef = useRef<HTMLAudioElement | null>(null)
   const beatRef = useRef<HTMLAudioElement | null>(null)
+  const breathRef = useRef<HTMLAudioElement | null>(null)
   const gainNodeRef = useRef<GainNode | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const interactionRef = useRef(false)
   const [heartbeatStopped, setHeartbeatStopped] = useState(false)
 
   useEffect(() => {
+    //repetitive code :D
     const music = new Audio('/mainsound.mp3')
     const beat = new Audio('/heart1.mp3')
+    const breath = new Audio('/breath.mp3')
 
     music.preload = 'auto'
     beat.preload = 'auto'
+    breath.preload = 'auto'
 
     music.loop = true
     beat.loop = true
+    breath.loop = true
 
     musicRef.current = music
     beatRef.current = beat
+    breathRef.current = breath
 
     const handleInteraction = () => {
       if (!interactionRef.current) {
@@ -34,7 +40,7 @@ const Overlay = () => {
 
         const source = audioContext.createMediaElementSource(music)
         const gainNode = audioContext.createGain()
-        gainNode.gain.value = 0.2
+        gainNode.gain.value = 0.8
         gainNodeRef.current = gainNode
 
         source.connect(gainNode).connect(audioContext.destination)
@@ -46,6 +52,10 @@ const Overlay = () => {
 
           beatRef.current?.play().catch((error) => {
             console.error('Heartbeat playback failed:', error)
+          })
+
+          breathRef.current?.play().catch((error) => {
+            console.error('Breath playback failed:', error)
           })
         })
       }
@@ -65,6 +75,10 @@ const Overlay = () => {
         beatRef.current.pause()
         beatRef.current = null
       }
+      if (breathRef.current) {
+        breathRef.current.pause()
+        breathRef.current = null
+      }
       if (audioContextRef.current) {
         audioContextRef.current.close()
         audioContextRef.current = null
@@ -76,10 +90,13 @@ const Overlay = () => {
     console.log('level', level)
     if (level === 1 || level === 2) {
       beatRef.current!.src = '/heart1.mp3'
+      breathRef.current!.src = '/breath1.mp3'
     } else if (level === 3) {
       beatRef.current!.src = '/heart2.mp3'
+      breathRef.current!.src = '/breath2.mp3'
     } else if (level === 4 || level === 5) {
       beatRef.current!.src = '/heart3.mp3'
+      breathRef.current!.src = '/breath3.mp3'
     }
 
     if (beatRef.current) {
@@ -87,6 +104,16 @@ const Overlay = () => {
       beatRef.current.currentTime = 0
       if (!heartbeatStopped && interactionRef.current) {
         beatRef.current.play().catch((error) => {
+          console.error('Heartbeat playback failed:', error)
+        })
+      }
+    }
+
+    if (breathRef.current) {
+      breathRef.current.pause()
+      breathRef.current.currentTime = 0
+      if (!heartbeatStopped && interactionRef.current) {
+        breathRef.current.play().catch((error) => {
           console.error('Heartbeat playback failed:', error)
         })
       }
@@ -113,6 +140,7 @@ const Overlay = () => {
       setTimeout(() => {
         if (musicRef.current) {
           musicRef.current.pause()
+          beatRef.current?.pause()
         }
       }, 300)
     } else if (!pause && gainNodeRef.current && interactionRef.current) {
@@ -128,6 +156,11 @@ const Overlay = () => {
           console.error('Heartbeat playback failed:', error)
         })
       }
+      if (!heartbeatStopped && breathRef.current) {
+        breathRef.current.play().catch((error) => {
+          console.error('Breath playback failed:', error)
+        })
+      }
     }
   }, [pause, heartbeatStopped])
 
@@ -136,6 +169,9 @@ const Overlay = () => {
       setHeartbeatStopped(true)
       if (beatRef.current) {
         beatRef.current.pause()
+      }
+      if (breathRef.current) {
+        breathRef.current.pause()
       }
       if (musicRef.current) {
         musicRef.current.pause()
