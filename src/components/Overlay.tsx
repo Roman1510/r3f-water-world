@@ -181,17 +181,17 @@ const Overlay = () => {
       }
     } else {
       setHeartbeatStopped(false)
-      if (musicRef.current) {
+      if (musicRef.current && interactionRef.current) {
         musicRef.current.play().catch((error) => {
           console.error('Music playback failed:', error)
         })
       }
-      if (!heartbeatStopped && beatRef.current) {
+      if (!heartbeatStopped && beatRef.current && interactionRef.current) {
         beatRef.current.play().catch((error) => {
           console.error('Heartbeat playback failed:', error)
         })
       }
-      if (!heartbeatStopped && breathRef.current) {
+      if (!heartbeatStopped && breathRef.current && interactionRef.current) {
         breathRef.current.play().catch((error) => {
           console.error('Breath playback failed:', error)
         })
