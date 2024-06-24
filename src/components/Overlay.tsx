@@ -25,7 +25,9 @@ const Overlay = () => {
 
     music.loop = true
     beat.loop = true
+    beat.volume = 0.5
     breath.loop = true
+    breath.volume = 0.3
 
     musicRef.current = music
     beatRef.current = beat
