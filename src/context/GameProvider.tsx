@@ -17,6 +17,7 @@ export type GameContextType = {
   seconds: number
   speedUp: boolean
   setSpeedUp: Dispatch<SetStateAction<boolean>>
+  gameOver: boolean
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined)
@@ -26,6 +27,7 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
   const [level, setLevel] = useState<ILevel>(1)
   const [seconds, setSeconds] = useState(0)
   const [speedUp, setSpeedUp] = useState(false)
+  const [gameOver, setGameOver] = useState(false)
 
   useControls({ SpeedUp: { value: speedUp, onChange: setSpeedUp } })
 
@@ -40,9 +42,11 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
         console.log('elapsedtime', elapsedTime)
         setSeconds(elapsedTime)
         if (elapsedTime >= 60) {
+          setGameOver(true)
           clearInterval(timer)
         } else {
           setLevel((prevLevel) => (prevLevel + 1) as ILevel)
+          setGameOver(false)
         }
       }, interval)
     }
@@ -62,6 +66,7 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
     seconds,
     speedUp,
     setSpeedUp,
+    gameOver,
   }
 
   return (

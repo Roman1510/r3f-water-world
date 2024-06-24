@@ -1,19 +1,16 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGame } from '../hooks/useGame'
 import { MaskOverlay } from './MaskOverlay'
 import { StartGame } from './StartGame'
 
 const Overlay = () => {
-  const { pause, level } = useGame()
+  const { pause, level, gameOver } = useGame()
   const musicRef = useRef<HTMLAudioElement | null>(null)
   const beatRef = useRef<HTMLAudioElement | null>(null)
   const gainNodeRef = useRef<GainNode | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const interactionRef = useRef(false)
-
-  useEffect(() => {
-    console.log('level', level)
-  }, [level])
+  const [heartbeatStopped, setHeartbeatStopped] = useState(false)
 
   useEffect(() => {
     const music = new Audio('/mainsound.mp3')
@@ -22,8 +19,8 @@ const Overlay = () => {
     music.preload = 'auto'
     beat.preload = 'auto'
 
-    beat.loop = true
     music.loop = true
+    beat.loop = true
 
     musicRef.current = music
     beatRef.current = beat
@@ -44,7 +41,11 @@ const Overlay = () => {
 
         audioContext.resume().then(() => {
           music.play().catch((error) => {
-            console.error('Audio playback failed:', error)
+            console.error('Music playback failed:', error)
+          })
+
+          beatRef.current?.play().catch((error) => {
+            console.error('Heartbeat playback failed:', error)
           })
         })
       }
@@ -60,12 +61,37 @@ const Overlay = () => {
         musicRef.current.pause()
         musicRef.current = null
       }
+      if (beatRef.current) {
+        beatRef.current.pause()
+        beatRef.current = null
+      }
       if (audioContextRef.current) {
         audioContextRef.current.close()
         audioContextRef.current = null
       }
     }
   }, [])
+
+  useEffect(() => {
+    console.log('level', level)
+    if (level === 1 || level === 2) {
+      beatRef.current!.src = '/heart1.mp3'
+    } else if (level === 3) {
+      beatRef.current!.src = '/heart2.mp3'
+    } else if (level === 4 || level === 5) {
+      beatRef.current!.src = '/heart3.mp3'
+    }
+
+    if (beatRef.current) {
+      beatRef.current.pause()
+      beatRef.current.currentTime = 0
+      if (!heartbeatStopped) {
+        beatRef.current.play().catch((error) => {
+          console.error('Heartbeat playback failed:', error)
+        })
+      }
+    }
+  }, [level, heartbeatStopped])
 
   useEffect(() => {
     const fadeVolume = (
@@ -85,19 +111,37 @@ const Overlay = () => {
     if (pause && gainNodeRef.current) {
       fadeVolume(gainNodeRef.current, 0, 0.3)
       setTimeout(() => {
-        musicRef.current?.pause()
+        if (musicRef.current) {
+          musicRef.current.pause()
+        }
       }, 300)
     } else if (!pause && gainNodeRef.current && interactionRef.current) {
-      musicRef.current?.play().catch((error) => {
-        console.error('Audio playback failed:', error)
-      })
+      if (musicRef.current) {
+        musicRef.current.play().catch((error) => {
+          console.error('Music playback failed:', error)
+        })
+      }
       fadeVolume(gainNodeRef.current, 1, 0.3)
 
-      beatRef.current?.play().catch((error) => {
-        console.error('Audio playback failed:', error)
-      })
+      if (!heartbeatStopped && beatRef.current) {
+        beatRef.current.play().catch((error) => {
+          console.error('Heartbeat playback failed:', error)
+        })
+      }
     }
-  }, [pause])
+  }, [pause, heartbeatStopped])
+
+  useEffect(() => {
+    if (gameOver) {
+      setHeartbeatStopped(true)
+      if (beatRef.current) {
+        beatRef.current.pause()
+      }
+      if (musicRef.current) {
+        musicRef.current.pause()
+      }
+    }
+  }, [gameOver])
 
   return (
     <>
