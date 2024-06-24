@@ -89,35 +89,46 @@ const Overlay = () => {
   }, [])
 
   useEffect(() => {
-    console.log('level', level)
-    if (level === 1 || level === 2) {
-      beatRef.current!.src = '/heart1.mp3'
-      breathRef.current!.src = '/breath1.mp3'
-    } else if (level === 3) {
-      beatRef.current!.src = '/heart2.mp3'
-      breathRef.current!.src = '/breath2.mp3'
-    } else if (level === 4 || level === 5) {
-      beatRef.current!.src = '/heart3.mp3'
-      breathRef.current!.src = '/breath3.mp3'
+    // Define an object to map levels to their respective audio sources
+    const levelAudioMap = {
+      1: { beat: '/heart1.mp3', breath: '/breath1.mp3' },
+      2: { beat: '/heart1.mp3', breath: '/breath1.mp3' },
+      3: { beat: '/heart2.mp3', breath: '/breath2.mp3' },
+      4: { beat: '/heart3.mp3', breath: '/breath3.mp3' },
+      5: { beat: '/heart3.mp3', breath: '/breath3.mp3' },
     }
 
+    // Extract audio sources based on current level
+    const { beat: beatSrc, breath: breathSrc } = levelAudioMap[level] || {}
+
+    // Update beatRef and breathRef if sources are defined
+    if (beatSrc && breathSrc) {
+      beatRef.current = new Audio(beatSrc)
+      beatRef.current.loop = true
+      breathRef.current!.src = breathSrc
+    }
+
+    // Play or stop beat audio based on interaction and heartbeatStopped
     if (beatRef.current) {
-      beatRef.current.pause()
-      beatRef.current.currentTime = 0
       if (!heartbeatStopped && interactionRef.current) {
         beatRef.current.play().catch((error) => {
           console.error('Heartbeat playback failed:', error)
         })
+      } else {
+        beatRef.current.pause()
+        beatRef.current.currentTime = 0
       }
     }
 
+    // Play or stop breath audio based on interaction and heartbeatStopped
     if (breathRef.current) {
-      breathRef.current.pause()
-      breathRef.current.currentTime = 0
       if (!heartbeatStopped && interactionRef.current) {
         breathRef.current.play().catch((error) => {
-          console.error('Heartbeat playback failed:', error)
+          console.error('Breath playback failed:', error)
         })
+      } else {
+        breathRef.current.pause()
+        breathRef.current.currentTime = 0
       }
     }
   }, [level, heartbeatStopped])
