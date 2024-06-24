@@ -16,7 +16,7 @@ const sideVector = new Vector3()
 
 const MAX_VERTICAL_ANGLE = Math.PI / 7.5
 const BASE_SPEED_MULTIPLIER = 12
-const DASH_SPEED_MULTIPLIER = 20 * 10
+const DASH_SPEED_MULTIPLIER = 21
 
 export function Player() {
   const ref = useRef<RapierRigidBody>(null)

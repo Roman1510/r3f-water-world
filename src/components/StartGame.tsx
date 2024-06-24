@@ -1,50 +1,92 @@
 import styled from 'styled-components'
 
 interface IProps {
-  title: string
+  title?: string
+  instructions?: string
+  footer?: string
 }
 
-export const StartGame = ({ title }: IProps) => {
+export const StartGame = ({ title, instructions, footer }: IProps) => {
   return (
-    <div
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 999999,
-      }}
-    >
+    <OverlayContainer>
       <Container>
         <Content>
           <Title>{title}</Title>
+          <Instructions>{instructions}</Instructions>
         </Content>
       </Container>
-    </div>
+      <Footer>{footer}</Footer>
+    </OverlayContainer>
   )
 }
 
+const OverlayContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 999999;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); /* Optional: to create a semi-transparent background */
+`
+
 const Container = styled.div`
-  position: relative;
-  height: 100vh;
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  padding-left: 5%;
+  width: 60%;
+  height: 100%; /* Ensure the container takes full height */
 `
 
 const Content = styled.div`
-  margin-left: 10%;
-  text-align: center;
+  text-align: left;
 `
 
 const Title = styled.h1`
-  font-size: 2.5rem;
-  color: #ff3333;
+  font-family: 'Oswald', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-size: 6.5rem;
+  color: #d3c6b1;
   text-shadow: 2px 2px 8px #000;
-  font-family: 'Creepster', cursive;
   margin-bottom: 20px;
+  user-select: none;
 `
+
+const Instructions = styled.p`
+  font-family: 'Oswald', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-size: 2.5rem;
+  color: #d3c6b1;
+  text-shadow: 1px 1px 4px #000;
+  margin-bottom: 20px;
+  user-select: none;
+`
+
+const Footer = styled.div`
+  font-family: 'Oswald', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-size: 1rem;
+  color: #d3c6b1;
+  text-shadow: 1px 1px 4px #000;
+  margin-bottom: 20px;
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  bottom: 20px;
+  user-select: none;
+`
+
+export default StartGame
