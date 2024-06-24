@@ -54,14 +54,12 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
       }, interval)
     }
 
-    // Clear the timer when paused or speedUp changes
     if (!pause) {
       startLevelTimer()
     } else {
       if (timer) clearInterval(timer)
     }
 
-    // Reset seconds and level when game is resumed
     if (pause) {
       setSeconds(0)
       setLevel(1)

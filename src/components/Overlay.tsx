@@ -13,7 +13,6 @@ const Overlay = () => {
   const interactionRef = useRef(false)
   const [heartbeatStopped, setHeartbeatStopped] = useState(false)
 
-  // Define levelAudioMap to map levels to audio sources
   const levelAudioMap = useMemo(
     () => ({
       1: { beat: '/heart1.mp3', breath: '/breath1.mp3' },
@@ -25,8 +24,8 @@ const Overlay = () => {
     []
   )
 
-  // Initialize audio and setup interaction handling
   useEffect(() => {
+    // :D
     const initializeAudio = () => {
       const music = new Audio('/mainsound.mp3')
       const beat = new Audio(levelAudioMap[level]?.beat || '/heart1.mp3')
@@ -107,7 +106,6 @@ const Overlay = () => {
     }
   }, [pause, level, levelAudioMap])
 
-  // Handle level changes and audio playback management
   useEffect(() => {
     const { beat: beatSrc, breath: breathSrc } = levelAudioMap[level] || {}
 
@@ -140,7 +138,6 @@ const Overlay = () => {
     }
   }, [level, heartbeatStopped, pause, levelAudioMap])
 
-  // Handle game over effect
   useEffect(() => {
     if (gameOver) {
       setHeartbeatStopped(true)
@@ -163,7 +160,6 @@ const Overlay = () => {
     }
   }, [gameOver, levelAudioMap])
 
-  // Handle pause effect
   useEffect(() => {
     if (pause) {
       setHeartbeatStopped(true)
@@ -176,7 +172,7 @@ const Overlay = () => {
       if (breathRef.current) {
         breathRef.current.pause()
       }
-      // Reset audio sources to level 1
+
       const { beat: beatSrc, breath: breathSrc } = levelAudioMap[1]
       if (beatSrc && breathSrc) {
         beatRef.current = new Audio(beatSrc)
