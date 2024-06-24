@@ -85,7 +85,7 @@ const Overlay = () => {
     if (beatRef.current) {
       beatRef.current.pause()
       beatRef.current.currentTime = 0
-      if (!heartbeatStopped) {
+      if (!heartbeatStopped && interactionRef.current) {
         beatRef.current.play().catch((error) => {
           console.error('Heartbeat playback failed:', error)
         })
