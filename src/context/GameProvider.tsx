@@ -15,9 +15,11 @@ export type GameContextType = {
   level: ILevel
   setLevel: Dispatch<SetStateAction<ILevel>>
   seconds: number
+  setSeconds: Dispatch<SetStateAction<number>>
   speedUp: boolean
   setSpeedUp: Dispatch<SetStateAction<boolean>>
   gameOver: boolean
+  setGameOver: Dispatch<SetStateAction<boolean>>
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined)
@@ -32,7 +34,8 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
   useControls({ SpeedUp: { value: speedUp, onChange: setSpeedUp } })
 
   useEffect(() => {
-    let timer: number
+    let timer: number | undefined
+
     const interval = speedUp ? 1500 : 15000
 
     const startLevelTimer = () => {
@@ -43,7 +46,7 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
         setSeconds(elapsedTime)
         if (elapsedTime >= 60) {
           setGameOver(true)
-          clearInterval(timer)
+          if (timer) clearInterval(timer)
         } else {
           setLevel((prevLevel) => (prevLevel + 1) as ILevel)
           setGameOver(false)
@@ -51,11 +54,23 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
       }, interval)
     }
 
+    // Clear the timer when paused or speedUp changes
     if (!pause) {
       startLevelTimer()
+    } else {
+      if (timer) clearInterval(timer)
     }
 
-    return () => clearInterval(timer)
+    // Reset seconds and level when game is resumed
+    if (pause) {
+      setSeconds(0)
+      setLevel(1)
+      setGameOver(false)
+    }
+
+    return () => {
+      if (timer) clearInterval(timer)
+    }
   }, [pause, speedUp])
 
   const providerValues = {
@@ -64,9 +79,11 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
     level,
     setLevel,
     seconds,
+    setSeconds,
     speedUp,
     setSpeedUp,
     gameOver,
+    setGameOver,
   }
 
   return (
