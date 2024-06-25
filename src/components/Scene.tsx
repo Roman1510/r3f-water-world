@@ -14,6 +14,7 @@ import {
   DepthOfField,
   EffectComposer,
   Noise,
+  Vignette,
   WaterEffect,
 } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
@@ -30,6 +31,7 @@ export const Scene: React.FC<{
   const [ready, setReady] = useState(false)
   const { setPause, level } = useGame()
   const [chromaticOffset, setChromaticOffset] = useState(new Vector2(0, 0))
+  const [vignetteOffset, setVignetteOffset] = useState(0)
 
   useEffect(() => {
     setPause(true)
@@ -47,9 +49,9 @@ export const Scene: React.FC<{
 
   useEffect(() => {
     let animationFrameId: number
-    if (level === 2) {
+    if (level === 3) {
       const targetOffset = new Vector2(0.01, 0.02)
-      const duration = 200 // Duration of the transition in milliseconds
+      const duration = 50 // Duration of the transition in milliseconds
       const startTime = performance.now()
 
       const animate = (currentTime: number) => {
@@ -71,6 +73,26 @@ export const Scene: React.FC<{
     }
 
     return () => cancelAnimationFrame(animationFrameId)
+  }, [level])
+
+  useEffect(() => {
+    switch (level) {
+      case 1:
+        setVignetteOffset(0.2)
+        break
+      case 2:
+        setVignetteOffset(0.5)
+        break
+      case 3:
+        setVignetteOffset(0.7)
+        break
+      case 4:
+        setVignetteOffset(0.9)
+        break
+      default:
+        setVignetteOffset(0)
+        break
+    }
   }, [level])
 
   return (
@@ -99,9 +121,10 @@ export const Scene: React.FC<{
       />
       {ready && (
         <EffectComposer enableNormalPass={false} multisampling={4}>
-          <Noise blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.1} />
+          <Noise blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.4} />
+          <Vignette eskil={false} offset={vignetteOffset} darkness={0.9} />
           <>
-            {level === 2 && (
+            {level === 4 && (
               <ChromaticAberration
                 blendFunction={BlendFunction.SOFT_LIGHT}
                 offset={chromaticOffset}
@@ -116,7 +139,7 @@ export const Scene: React.FC<{
             bokehScale={bokehScale}
             height={height}
           />
-          <WaterEffect />
+          <WaterEffect opacity={0.5} />
         </EffectComposer>
       )}
     </>
