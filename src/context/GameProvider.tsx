@@ -27,7 +27,7 @@ export type GameContextType = {
 export const GameContext = createContext<GameContextType | undefined>(undefined)
 
 export const GameProvider = ({ children }: PropsWithChildren) => {
-  const [pause, setPause] = useState(false)
+  const [pause, setPause] = useState(true)
   const [level, setLevel] = useState<ILevel>(1)
   const [seconds, setSeconds] = useState(0)
   const [speedUp, setSpeedUp] = useState(false)
@@ -39,7 +39,7 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     let timer: number | undefined
 
-    const interval = speedUp ? 1500 : 15000
+    const interval = speedUp ? 1550 : 15500
 
     const startLevelTimer = () => {
       let elapsedTime = 0

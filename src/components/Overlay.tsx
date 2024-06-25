@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useGame } from '../hooks/useGame'
 import { MaskOverlay } from './MaskOverlay'
 import { StartGame } from './StartGame'
@@ -25,57 +25,67 @@ const Overlay = () => {
   )
 
   useEffect(() => {
-    // :D
-    const initializeAudio = () => {
-      const music = new Audio('/mainsound.mp3')
-      const beat = new Audio(levelAudioMap[level]?.beat || '/heart1.mp3')
-      const breath = new Audio(levelAudioMap[level]?.breath || '/breath1.mp3')
-
-      music.preload = 'auto'
-      beat.preload = 'auto'
-      breath.preload = 'auto'
-
-      music.loop = true
-      beat.loop = true
-      beat.volume = 0.5
-      breath.loop = true
-      breath.volume = 0.3
-
-      musicRef.current = music
-      beatRef.current = beat
-      breathRef.current = breath
+    // Preload audio files
+    const preloadAudio = (src: string) => {
+      const audio = new Audio(src)
+      audio.preload = 'auto'
+      return audio
     }
 
-    const handleInteraction = () => {
-      if (!interactionRef.current) {
-        interactionRef.current = true
+    const audioFiles = Object.values(levelAudioMap).flatMap(
+      ({ beat, breath }) => [preloadAudio(beat), preloadAudio(breath)]
+    )
 
-        const audioContext = new window.AudioContext()
-        audioContextRef.current = audioContext
-
-        const source = audioContext.createMediaElementSource(musicRef.current!)
-        const gainNode = audioContext.createGain()
-        gainNode.gain.value = 0.8
-        gainNodeRef.current = gainNode
-
-        source.connect(gainNode).connect(audioContext.destination)
-
-        audioContext.resume().then(() => {
-          if (!pause) {
-            musicRef.current!.play().catch((error) => {
-              console.error('Music playback failed:', error)
-            })
-            beatRef.current!.play().catch((error) => {
-              console.error('Heartbeat playback failed:', error)
-            })
-            breathRef.current!.play().catch((error) => {
-              console.error('Breath playback failed:', error)
-            })
-          }
-        })
-      }
+    return () => {
+      audioFiles.forEach((audio) => audio.pause())
     }
+  }, [levelAudioMap])
 
+  const initializeAudio = useCallback(() => {
+    const music = new Audio('/mainsound.mp3')
+    music.preload = 'auto'
+    music.loop = true
+
+    const beat = new Audio(levelAudioMap[level]?.beat || '/heart1.mp3')
+    beat.preload = 'auto'
+    beat.loop = true
+    beat.volume = 0.5
+
+    const breath = new Audio(levelAudioMap[level]?.breath || '/breath1.mp3')
+    breath.preload = 'auto'
+    breath.loop = true
+    breath.volume = 0.3
+
+    musicRef.current = music
+    beatRef.current = beat
+    breathRef.current = breath
+  }, [level, levelAudioMap])
+
+  const handleInteraction = useCallback(() => {
+    if (!interactionRef.current) {
+      interactionRef.current = true
+
+      const audioContext = new window.AudioContext()
+      audioContextRef.current = audioContext
+
+      const source = audioContext.createMediaElementSource(musicRef.current!)
+      const gainNode = audioContext.createGain()
+      gainNode.gain.value = 0.8
+      gainNodeRef.current = gainNode
+
+      source.connect(gainNode).connect(audioContext.destination)
+
+      audioContext.resume().then(() => {
+        if (!pause) {
+          musicRef.current!.play().catch(console.error)
+          beatRef.current!.play().catch(console.error)
+          breathRef.current!.play().catch(console.error)
+        }
+      })
+    }
+  }, [pause])
+
+  useEffect(() => {
     initializeAudio()
 
     document.addEventListener('click', handleInteraction)
@@ -85,130 +95,64 @@ const Overlay = () => {
       document.removeEventListener('click', handleInteraction)
       document.removeEventListener('keydown', handleInteraction)
 
-      if (musicRef.current) {
-        musicRef.current.pause()
-        musicRef.current = null
-      }
-      if (beatRef.current) {
-        beatRef.current.pause()
-        beatRef.current = null
-      }
-      if (breathRef.current) {
-        breathRef.current.pause()
-        breathRef.current = null
-      }
-      if (audioContextRef.current) {
-        audioContextRef.current.close().catch((error) => {
-          console.error('Failed to close AudioContext:', error)
-        })
-        audioContextRef.current = null
-      }
+      if (musicRef.current) musicRef.current.pause()
+      if (beatRef.current) beatRef.current.pause()
+      if (breathRef.current) breathRef.current.pause()
+      if (audioContextRef.current)
+        audioContextRef.current.close().catch(console.error)
     }
-  }, [pause, level, levelAudioMap])
+  }, [initializeAudio, handleInteraction])
 
   useEffect(() => {
     const { beat: beatSrc, breath: breathSrc } = levelAudioMap[level] || {}
 
     if (beatSrc && breathSrc) {
-      beatRef.current = new Audio(beatSrc)
-      beatRef.current.loop = true
-      breathRef.current!.src = breathSrc
+      if (beatRef.current) beatRef.current.src = beatSrc
+      if (breathRef.current) breathRef.current.src = breathSrc
     }
 
-    if (beatRef.current) {
-      if (!heartbeatStopped && interactionRef.current && !pause) {
-        beatRef.current.play().catch((error) => {
-          console.error('Heartbeat playback failed:', error)
-        })
-      } else {
-        beatRef.current.pause()
-        beatRef.current.currentTime = 0
-      }
-    }
-
-    if (breathRef.current) {
-      if (!heartbeatStopped && interactionRef.current && !pause) {
-        breathRef.current.play().catch((error) => {
-          console.error('Breath playback failed:', error)
-        })
-      } else {
-        breathRef.current.pause()
-        breathRef.current.currentTime = 0
-      }
+    if (interactionRef.current && !pause) {
+      if (beatRef.current) beatRef.current.play().catch(console.error)
+      if (breathRef.current) breathRef.current.play().catch(console.error)
     }
   }, [level, heartbeatStopped, pause, levelAudioMap])
 
   useEffect(() => {
     if (gameOver) {
       setHeartbeatStopped(true)
-      if (beatRef.current) {
-        beatRef.current.pause()
-      }
-      if (breathRef.current) {
-        breathRef.current.pause()
-      }
-      if (musicRef.current) {
-        musicRef.current.pause()
-      }
-      // Reset audio sources to level 1
-      const { beat: beatSrc, breath: breathSrc } = levelAudioMap[1]
-      if (beatSrc && breathSrc) {
-        beatRef.current = new Audio(beatSrc)
-        beatRef.current.loop = true
-        breathRef.current!.src = breathSrc
-      }
+      if (beatRef.current) beatRef.current.pause()
+      if (breathRef.current) breathRef.current.pause()
+      if (musicRef.current) musicRef.current.pause()
     }
-  }, [gameOver, levelAudioMap])
+  }, [gameOver])
 
   useEffect(() => {
     if (pause) {
       setHeartbeatStopped(true)
-      if (musicRef.current) {
-        musicRef.current.pause()
-      }
-      if (beatRef.current) {
-        beatRef.current.pause()
-      }
-      if (breathRef.current) {
-        breathRef.current.pause()
-      }
-
-      const { beat: beatSrc, breath: breathSrc } = levelAudioMap[1]
-      if (beatSrc && breathSrc) {
-        beatRef.current = new Audio(beatSrc)
-        beatRef.current.loop = true
-        breathRef.current!.src = breathSrc
-      }
+      if (musicRef.current) musicRef.current.pause()
+      if (beatRef.current) beatRef.current.pause()
+      if (breathRef.current) breathRef.current.pause()
     } else {
       setHeartbeatStopped(false)
-      if (musicRef.current && interactionRef.current) {
-        musicRef.current.play().catch((error) => {
-          console.error('Music playback failed:', error)
-        })
-      }
-      if (!heartbeatStopped && beatRef.current && interactionRef.current) {
-        beatRef.current.play().catch((error) => {
-          console.error('Heartbeat playback failed:', error)
-        })
-      }
-      if (!heartbeatStopped && breathRef.current && interactionRef.current) {
-        breathRef.current.play().catch((error) => {
-          console.error('Breath playback failed:', error)
-        })
+      if (interactionRef.current) {
+        if (musicRef.current) musicRef.current.play().catch(console.error)
+        if (beatRef.current) beatRef.current.play().catch(console.error)
+        if (breathRef.current) breathRef.current.play().catch(console.error)
       }
     }
-  }, [pause, heartbeatStopped, levelAudioMap])
+  }, [pause, heartbeatStopped])
 
   return (
     <>
-      {pause && (
+      {pause ? (
         <StartGame
-          title="You want to survive, just click on your screen. "
+          title="You want to survive, just click on your screen."
           instructions="Use [WASD] to move and [Space] for dash. To pick up oxygen use [E]"
           footer="This game contains sounds, be careful. Github: Roman1510"
         />
+      ) : (
+        <MaskOverlay />
       )}
-      {!pause && <MaskOverlay />}
     </>
   )
 }
