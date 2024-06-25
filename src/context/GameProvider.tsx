@@ -37,6 +37,10 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
   useControls({ SpeedUp: { value: speedUp, onChange: setSpeedUp } })
 
   useEffect(() => {
+    setIsLoaded(true)
+  }, [])
+
+  useEffect(() => {
     let timer: number | undefined
 
     const interval = speedUp ? 1550 : 15500

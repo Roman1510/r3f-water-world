@@ -10,15 +10,15 @@ import { Stage } from './Stage'
 import { keyboardControls } from '../const/keyboardControls'
 import { useGame } from '../hooks/useGame'
 import {
+  ChromaticAberration,
   DepthOfField,
-  // ChromaticAberration,
   EffectComposer,
   Noise,
   WaterEffect,
-} from '@react-three/postprocessing' // Import the required components
+} from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { useControls } from 'leva'
-// import { Vector2 } from 'three'
+import { Vector2 } from 'three'
 
 export const Scene: React.FC<{
   canvasRef: MutableRefObject<HTMLCanvasElement | null>
@@ -28,12 +28,12 @@ export const Scene: React.FC<{
   }
 
   const [ready, setReady] = useState(false)
-  const { setPause } = useGame()
+  const { setPause, level } = useGame()
+  const [chromaticOffset, setChromaticOffset] = useState(new Vector2(0, 0))
 
   useEffect(() => {
     setPause(true)
   }, [setPause])
-  // const offset: Vector2 = new Vector2(0.01, 0.02)
 
   const { focusDistance, focalLength, bokehScale, height } = useControls(
     'DepthOfField',
@@ -44,6 +44,35 @@ export const Scene: React.FC<{
       height: { value: 800, min: 0, max: 1000, step: 10 },
     }
   )
+
+  useEffect(() => {
+    let animationFrameId: number
+    if (level === 2) {
+      const targetOffset = new Vector2(0.01, 0.02)
+      const duration = 200 // Duration of the transition in milliseconds
+      const startTime = performance.now()
+
+      const animate = (currentTime: number) => {
+        const elapsedTime = currentTime - startTime
+        const progress = Math.min(elapsedTime / duration, 1)
+        const newOffset = new Vector2(
+          targetOffset.x * progress,
+          targetOffset.y * progress
+        )
+        setChromaticOffset(newOffset)
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(animate)
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(animate)
+    } else {
+      setChromaticOffset(new Vector2(0, 0))
+    }
+
+    return () => cancelAnimationFrame(animationFrameId)
+  }, [level])
+
   return (
     <>
       <Environment
@@ -71,12 +100,16 @@ export const Scene: React.FC<{
       {ready && (
         <EffectComposer enableNormalPass={false} multisampling={4}>
           <Noise blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.1} />
-          {/* <ChromaticAberration
-            blendFunction={BlendFunction.SOFT_LIGHT}
-            offset={offset}
-            radialModulation={false}
-            modulationOffset={0.001}
-          /> */}
+          <>
+            {level === 2 && (
+              <ChromaticAberration
+                blendFunction={BlendFunction.SOFT_LIGHT}
+                offset={chromaticOffset}
+                radialModulation={false}
+                modulationOffset={0.001}
+              />
+            )}
+          </>
           <DepthOfField
             focusDistance={focusDistance}
             focalLength={focalLength}
