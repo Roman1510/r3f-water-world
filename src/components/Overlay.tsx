@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
+import { useEffect, useMemo, useRef, useCallback } from 'react'
 import { useGame } from '../hooks/useGame'
 import { MaskOverlay } from './MaskOverlay'
 import { StartGame } from './StartGame'
@@ -11,55 +11,45 @@ const Overlay = () => {
   const gainNodeRef = useRef<GainNode | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const interactionRef = useRef(false)
-  const [heartbeatStopped, setHeartbeatStopped] = useState(false)
 
-  const levelAudioMap = useMemo(
+  const levelSpeedMap = useMemo(
     () => ({
-      1: { beat: '/heart1.mp3', breath: '/breath1.mp3' },
-      2: { beat: '/heart1.mp3', breath: '/breath1.mp3' },
-      3: { beat: '/heart2.mp3', breath: '/breath2.mp3' },
-      4: { beat: '/heart3.mp3', breath: '/breath3.mp3' },
-      5: { beat: '/heart3.mp3', breath: '/breath3.mp3' },
+      1: 1.0,
+      2: 1.4,
+      3: 1.8,
+      4: 2.2,
+      5: 2.2,
     }),
     []
   )
 
   useEffect(() => {
-    // Preload audio files
     const preloadAudio = (src: string) => {
       const audio = new Audio(src)
       audio.preload = 'auto'
       return audio
     }
 
-    const audioFiles = Object.values(levelAudioMap).flatMap(
-      ({ beat, breath }) => [preloadAudio(beat), preloadAudio(breath)]
-    )
+    const music = preloadAudio('/mainsound.mp3')
+    const beat = preloadAudio('/heart.mp3')
+    const breath = preloadAudio('/breath.mp3')
 
-    return () => {
-      audioFiles.forEach((audio) => audio.pause())
-    }
-  }, [levelAudioMap])
-
-  const initializeAudio = useCallback(() => {
-    const music = new Audio('/mainsound.mp3')
-    music.preload = 'auto'
     music.loop = true
-
-    const beat = new Audio(levelAudioMap[level]?.beat || '/heart1.mp3')
-    beat.preload = 'auto'
     beat.loop = true
     beat.volume = 0.5
-
-    const breath = new Audio(levelAudioMap[level]?.breath || '/breath1.mp3')
-    breath.preload = 'auto'
     breath.loop = true
     breath.volume = 0.3
 
     musicRef.current = music
     beatRef.current = beat
     breathRef.current = breath
-  }, [level, levelAudioMap])
+
+    return () => {
+      music.pause()
+      beat.pause()
+      breath.pause()
+    }
+  }, [])
 
   const handleInteraction = useCallback(() => {
     if (!interactionRef.current) {
@@ -86,8 +76,6 @@ const Overlay = () => {
   }, [pause])
 
   useEffect(() => {
-    initializeAudio()
-
     document.addEventListener('click', handleInteraction)
     document.addEventListener('keydown', handleInteraction)
 
@@ -101,46 +89,33 @@ const Overlay = () => {
       if (audioContextRef.current)
         audioContextRef.current.close().catch(console.error)
     }
-  }, [initializeAudio, handleInteraction])
+  }, [handleInteraction])
 
   useEffect(() => {
-    const { beat: beatSrc, breath: breathSrc } = levelAudioMap[level] || {}
+    const playbackRate = levelSpeedMap[level] || 1.0
 
-    if (beatSrc && breathSrc) {
-      if (beatRef.current) beatRef.current.src = beatSrc
-      if (breathRef.current) breathRef.current.src = breathSrc
-    }
+    if (beatRef.current) beatRef.current.playbackRate = playbackRate
+    if (breathRef.current) breathRef.current.playbackRate = playbackRate
 
     if (interactionRef.current && !pause) {
       if (beatRef.current) beatRef.current.play().catch(console.error)
       if (breathRef.current) breathRef.current.play().catch(console.error)
     }
-  }, [level, heartbeatStopped, pause, levelAudioMap])
+  }, [level, pause, levelSpeedMap])
 
   useEffect(() => {
-    if (gameOver) {
-      setHeartbeatStopped(true)
-      if (beatRef.current) beatRef.current.pause()
-      if (breathRef.current) breathRef.current.pause()
-      if (musicRef.current) musicRef.current.pause()
-    }
-  }, [gameOver])
-
-  useEffect(() => {
-    if (pause) {
-      setHeartbeatStopped(true)
+    if (gameOver || pause) {
       if (musicRef.current) musicRef.current.pause()
       if (beatRef.current) beatRef.current.pause()
       if (breathRef.current) breathRef.current.pause()
     } else {
-      setHeartbeatStopped(false)
       if (interactionRef.current) {
         if (musicRef.current) musicRef.current.play().catch(console.error)
         if (beatRef.current) beatRef.current.play().catch(console.error)
         if (breathRef.current) breathRef.current.play().catch(console.error)
       }
     }
-  }, [pause, heartbeatStopped])
+  }, [pause, gameOver])
 
   return (
     <>
