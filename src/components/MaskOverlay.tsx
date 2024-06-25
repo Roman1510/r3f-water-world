@@ -19,7 +19,11 @@ const Image = styled.img`
 export const MaskOverlay = () => {
   return (
     <OverlayContainer>
-      <Image src={`mask.png`} alt="Mask" className="mask-image" />
+      <Image
+        src={`https://roman1510.github.io/files/mask.png`}
+        alt="Mask"
+        className="mask-image"
+      />
     </OverlayContainer>
   )
 }

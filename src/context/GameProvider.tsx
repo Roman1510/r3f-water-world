@@ -20,6 +20,8 @@ export type GameContextType = {
   setSpeedUp: Dispatch<SetStateAction<boolean>>
   gameOver: boolean
   setGameOver: Dispatch<SetStateAction<boolean>>
+  isLoaded: boolean
+  setIsLoaded: Dispatch<SetStateAction<boolean>>
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined)
@@ -30,6 +32,7 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
   const [seconds, setSeconds] = useState(0)
   const [speedUp, setSpeedUp] = useState(false)
   const [gameOver, setGameOver] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useControls({ SpeedUp: { value: speedUp, onChange: setSpeedUp } })
 
@@ -82,6 +85,8 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
     setSpeedUp,
     gameOver,
     setGameOver,
+    isLoaded,
+    setIsLoaded,
   }
 
   return (

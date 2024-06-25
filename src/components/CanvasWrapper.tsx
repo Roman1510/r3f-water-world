@@ -5,6 +5,7 @@ import { Loading } from './Loading'
 
 import { Color, FogExp2 } from 'three'
 import { Scene } from './Scene'
+import { AdaptiveDpr, AdaptiveEvents } from '@react-three/drei'
 
 export function CanvasWrapper() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -12,7 +13,7 @@ export function CanvasWrapper() {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Canvas
-        dpr={0.8}
+        dpr={0.6}
         camera={{ fov: 35 }}
         onCreated={({ scene }) => {
           scene.background = new Color(0x000000)
@@ -26,6 +27,8 @@ export function CanvasWrapper() {
         <Suspense fallback={<Loading />}>
           <Scene canvasRef={canvasRef} />
         </Suspense>
+        <AdaptiveDpr pixelated />
+        <AdaptiveEvents />
       </Canvas>
     </div>
   )
