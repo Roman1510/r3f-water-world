@@ -32,7 +32,7 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
   }
 
   const [ready, setReady] = useState(false)
-  const { setPause, level } = useGame()
+  const { setPause, level, oxygenPosition } = useGame()
 
   useEffect(() => {
     setPause(true)
@@ -57,7 +57,7 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
       />
       <Physics gravity={[0, -10, 0]}>
         <KeyboardControls map={keyboardControls}>
-          {ready ? <Stage /> : null}
+          {ready ? <Stage oxygenPosition={oxygenPosition} /> : null}
         </KeyboardControls>
       </Physics>
       <PointerLockControls

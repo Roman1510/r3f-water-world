@@ -9,9 +9,10 @@ import {
   useCallback,
   useRef,
 } from 'react'
-import { useControls } from 'leva'
+
 import { useDebounce } from 'use-debounce'
 import { ILevel } from '../types/common'
+import { Vector3 } from 'three'
 
 export type GameContextType = {
   pause: boolean
@@ -20,12 +21,11 @@ export type GameContextType = {
   setLevel: Dispatch<SetStateAction<ILevel>>
   seconds: number
   setSeconds: Dispatch<SetStateAction<number>>
-  speedUp: boolean
-  setSpeedUp: Dispatch<SetStateAction<boolean>>
   gameOver: boolean
   setGameOver: Dispatch<SetStateAction<boolean>>
   isLoaded: boolean
   setIsLoaded: Dispatch<SetStateAction<boolean>>
+  oxygenPosition: Vector3
 }
 
 export const GameContext = createContext<GameContextType | undefined>(undefined)
@@ -41,8 +41,6 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
   const startTimeRef = useRef<number | null>(null)
 
   const debouncedLevel = useDebounce(level, 100)[0] // Debounce the level updates
-
-  useControls({ SpeedUp: { value: speedUp, onChange: setSpeedUp } })
 
   useEffect(() => {
     setIsLoaded(true)
@@ -94,6 +92,24 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
     }
   }, [pause, speedUp, updateGame])
 
+  const generateRandomPositionInRing = (
+    innerRadius: number,
+    outerRadius: number
+  ) => {
+    const angle = Math.random() * 2 * Math.PI
+    const radius = innerRadius + Math.random() * (outerRadius - innerRadius)
+    const x = radius * Math.cos(angle)
+    const z = radius * Math.sin(angle)
+    return new Vector3(x, -29, z)
+  }
+
+  const innerRadius = 300
+  const outerRadius = 500
+  const oxygenPosition = useMemo(
+    () => generateRandomPositionInRing(innerRadius, outerRadius),
+    [innerRadius, outerRadius]
+  )
+
   const providerValues = useMemo(
     () => ({
       pause,
@@ -102,14 +118,14 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
       setLevel,
       seconds,
       setSeconds,
-      speedUp,
       setSpeedUp,
       gameOver,
       setGameOver,
       isLoaded,
       setIsLoaded,
+      oxygenPosition,
     }),
-    [pause, debouncedLevel, seconds, speedUp, gameOver, isLoaded]
+    [pause, debouncedLevel, seconds, gameOver, isLoaded, oxygenPosition]
   )
 
   return (

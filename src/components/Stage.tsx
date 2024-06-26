@@ -4,7 +4,7 @@ import { Player } from './Player'
 import { WaterPlane } from './WaterPlane'
 import { Vector3 } from 'three'
 
-export function Stage() {
+export function Stage({ oxygenPosition }: { oxygenPosition: Vector3 }) {
   const numSeaweeds = 5000
   const planeScale = 4000
 
@@ -27,8 +27,12 @@ export function Stage() {
     'https://roman1510.github.io/files/oxygen.glb'
   )
 
-  oxygenModel.scale.set(0.7, 0.7, 0.7)
+  oxygenModel.scale.set(1.2, 1.2, 1.2)
   oxygenModel.rotation.set(Math.PI / 2, 0, Math.PI / 2)
+
+  // const { scene: rockSea } = useGLTF('/rock-sea.glb')
+
+  // rockSea.scale.set(40, 40, 40)
 
   return (
     <>
@@ -45,9 +49,15 @@ export function Stage() {
 
       <primitive
         object={oxygenModel.clone()}
-        position={new Vector3(0, -29, -150)}
+        position={oxygenPosition}
         key="oxygen"
       />
+
+      {/* <primitive
+        object={rockSea.clone()}
+        position={new Vector3(20, -29, -150)}
+        key="rock-sea"
+      /> */}
     </>
   )
 }
