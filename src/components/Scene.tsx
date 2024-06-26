@@ -17,25 +17,33 @@ import {
   Vignette,
   WaterEffect,
 } from '@react-three/postprocessing'
-import { BlendFunction } from 'postprocessing'
+import { BlendFunction, ShaderPass } from 'postprocessing'
 import { useControls } from 'leva'
 import { Vector2 } from 'three'
+import { extend } from '@react-three/fiber'
+// import { CustomMaterial } from './CustomMaterial'
 
-export const Scene: React.FC<{
+interface ISceneProps {
   canvasRef: MutableRefObject<HTMLCanvasElement | null>
-}> = ({ canvasRef }) => {
+}
+extend({ ShaderPass })
+export const Scene = ({ canvasRef }: ISceneProps) => {
   const handleStartGame = () => {
     setReady(true)
   }
 
   const [ready, setReady] = useState(false)
   const { setPause, level } = useGame()
-  const [chromaticOffset, setChromaticOffset] = useState(new Vector2(0, 0))
-  const [vignetteOffset, setVignetteOffset] = useState(0)
 
   useEffect(() => {
     setPause(true)
   }, [setPause])
+  // const { viewport, size } = useThree()
+  // const ref = useRef({
+  //   time: 0,
+  //   resolution: new Vector3(),
+  //   pointer: new Vector3(),
+  // })
 
   const { focusDistance, focalLength, bokehScale, height } = useControls(
     'DepthOfField',
@@ -46,55 +54,7 @@ export const Scene: React.FC<{
       height: { value: 800, min: 0, max: 1000, step: 10 },
     }
   )
-
-  useEffect(() => {
-    let animationFrameId: number
-    if (level === 3) {
-      const targetOffset = new Vector2(0.01, 0.02)
-      const duration = 50 // Duration of the transition in milliseconds
-      const startTime = performance.now()
-
-      const animate = (currentTime: number) => {
-        const elapsedTime = currentTime - startTime
-        const progress = Math.min(elapsedTime / duration, 1)
-        const newOffset = new Vector2(
-          targetOffset.x * progress,
-          targetOffset.y * progress
-        )
-        setChromaticOffset(newOffset)
-        if (progress < 1) {
-          animationFrameId = requestAnimationFrame(animate)
-        }
-      }
-
-      animationFrameId = requestAnimationFrame(animate)
-    } else {
-      setChromaticOffset(new Vector2(0, 0))
-    }
-
-    return () => cancelAnimationFrame(animationFrameId)
-  }, [level])
-
-  useEffect(() => {
-    switch (level) {
-      case 1:
-        setVignetteOffset(0.2)
-        break
-      case 2:
-        setVignetteOffset(0.5)
-        break
-      case 3:
-        setVignetteOffset(0.7)
-        break
-      case 4:
-        setVignetteOffset(0.9)
-        break
-      default:
-        setVignetteOffset(0)
-        break
-    }
-  }, [level])
-
+  // const texture = useLoader(TextureLoader, '/sand2.jpg')
   return (
     <>
       <Environment
@@ -105,6 +65,19 @@ export const Scene: React.FC<{
       <Physics gravity={[0, -10, 0]}>
         <KeyboardControls map={keyboardControls}>
           {ready ? <Stage /> : null}
+          {/* <mesh scale={[viewport.width, viewport.height, 1]}>
+            <planeGeometry />
+            <customMaterial
+              ref={ref}
+              source={texture}
+              videoTexture={texture}
+              key={CustomMaterial.key}
+              resolution={[
+                size.width * viewport.dpr,
+                size.height * viewport.dpr,
+              ]}
+            />
+          </mesh> */}
         </KeyboardControls>
       </Physics>
       <PointerLockControls
@@ -120,27 +93,29 @@ export const Scene: React.FC<{
         }}
       />
       {ready && (
-        <EffectComposer enableNormalPass={false} multisampling={4}>
-          <Noise blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.4} />
-          <Vignette eskil={false} offset={vignetteOffset} darkness={0.9} />
-          <>
-            {level === 4 && (
-              <ChromaticAberration
-                blendFunction={BlendFunction.SOFT_LIGHT}
-                offset={chromaticOffset}
-                radialModulation={false}
-                modulationOffset={0.001}
-              />
-            )}
-          </>
-          <DepthOfField
-            focusDistance={focusDistance}
-            focalLength={focalLength}
-            bokehScale={bokehScale}
-            height={height}
-          />
-          <WaterEffect opacity={0.5} />
-        </EffectComposer>
+        <>
+          <EffectComposer enableNormalPass={false} multisampling={4}>
+            <Noise blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.4} />
+            <Vignette eskil={false} offset={0.55} darkness={0.9} />
+            <>
+              {level === 4 && (
+                <ChromaticAberration
+                  blendFunction={BlendFunction.SOFT_LIGHT}
+                  offset={new Vector2(0.02, 0.05)}
+                  radialModulation={false}
+                  modulationOffset={0.001}
+                />
+              )}
+            </>
+            <DepthOfField
+              focusDistance={focusDistance}
+              focalLength={focalLength}
+              bokehScale={bokehScale}
+              height={height}
+            />
+            <WaterEffect factor={0.6} />
+          </EffectComposer>
+        </>
       )}
     </>
   )
