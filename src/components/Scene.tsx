@@ -21,7 +21,6 @@ import { BlendFunction, ShaderPass } from 'postprocessing'
 import { useControls } from 'leva'
 import { Vector2 } from 'three'
 import { extend } from '@react-three/fiber'
-// import { CustomMaterial } from './CustomMaterial'
 
 interface ISceneProps {
   canvasRef: MutableRefObject<HTMLCanvasElement | null>
@@ -38,12 +37,6 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
   useEffect(() => {
     setPause(true)
   }, [setPause])
-  // const { viewport, size } = useThree()
-  // const ref = useRef({
-  //   time: 0,
-  //   resolution: new Vector3(),
-  //   pointer: new Vector3(),
-  // })
 
   const { focusDistance, focalLength, bokehScale, height } = useControls(
     'DepthOfField',
@@ -54,7 +47,7 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
       height: { value: 800, min: 0, max: 1000, step: 10 },
     }
   )
-  // const texture = useLoader(TextureLoader, '/sand2.jpg')
+
   return (
     <>
       <Environment
@@ -65,19 +58,6 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
       <Physics gravity={[0, -10, 0]}>
         <KeyboardControls map={keyboardControls}>
           {ready ? <Stage /> : null}
-          {/* <mesh scale={[viewport.width, viewport.height, 1]}>
-            <planeGeometry />
-            <customMaterial
-              ref={ref}
-              source={texture}
-              videoTexture={texture}
-              key={CustomMaterial.key}
-              resolution={[
-                size.width * viewport.dpr,
-                size.height * viewport.dpr,
-              ]}
-            />
-          </mesh> */}
         </KeyboardControls>
       </Physics>
       <PointerLockControls
@@ -113,7 +93,7 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
               bokehScale={bokehScale}
               height={height}
             />
-            <WaterEffect factor={0.6} />
+            <WaterEffect factor={0.63} />
           </EffectComposer>
         </>
       )}

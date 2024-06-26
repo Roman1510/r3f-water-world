@@ -23,6 +23,13 @@ export function Stage() {
 
   seaweedModel.scale.set(5, 5, 5)
 
+  const { scene: oxygenModel } = useGLTF(
+    'https://roman1510.github.io/files/oxygen.glb'
+  )
+
+  oxygenModel.scale.set(0.7, 0.7, 0.7)
+  oxygenModel.rotation.set(Math.PI / 2, 0, Math.PI / 2)
+
   return (
     <>
       <Player />
@@ -35,6 +42,12 @@ export function Stage() {
           key={index}
         />
       ))}
+
+      <primitive
+        object={oxygenModel.clone()}
+        position={new Vector3(0, -29, -150)}
+        key="oxygen"
+      />
     </>
   )
 }

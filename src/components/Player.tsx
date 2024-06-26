@@ -1,5 +1,5 @@
-import { useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useEffect, useRef } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
 import { useKeyboardControls, SpotLight } from '@react-three/drei'
 import {
   CapsuleCollider,
@@ -9,6 +9,7 @@ import {
 import { SpotLight as SpotLightImpl, Vector3, Mesh } from 'three'
 import { useCameraShake } from '../hooks/useCameraShake'
 import { useControls } from 'leva'
+import { useGame } from '../hooks/useGame'
 
 const direction = new Vector3()
 const frontVector = new Vector3()
@@ -25,8 +26,17 @@ export function Player() {
 
   const targetRef = useRef<Mesh>(null)
   const [, get] = useKeyboardControls()
+  const { pause } = useGame()
+  const { camera } = useThree()
+
   useCameraShake(0.55, 1.4)
 
+  useEffect(() => {
+    if (pause) {
+      camera.quaternion.set(0, 0, 0, 1)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pause])
   const { spotlight2OffsetX, spotlight2OffsetY, spotlight2OffsetZ } =
     useControls({
       spotlight2OffsetX: { value: 0, min: -150, max: 150, step: 0.1 },

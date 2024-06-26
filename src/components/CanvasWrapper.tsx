@@ -13,7 +13,7 @@ export function CanvasWrapper() {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Canvas
-        dpr={0.6}
+        dpr={0.55}
         camera={{ fov: 35 }}
         onCreated={({ scene }) => {
           scene.background = new Color(0x000000)

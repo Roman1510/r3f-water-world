@@ -4,9 +4,13 @@ import {
   createContext,
   useState,
   useEffect,
+  useMemo,
   PropsWithChildren,
+  useCallback,
+  useRef,
 } from 'react'
 import { useControls } from 'leva'
+import { useDebounce } from 'use-debounce'
 import { ILevel } from '../types/common'
 
 export type GameContextType = {
@@ -33,6 +37,10 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
   const [speedUp, setSpeedUp] = useState(false)
   const [gameOver, setGameOver] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
+  const requestRef = useRef<number | null>(null)
+  const startTimeRef = useRef<number | null>(null)
+
+  const debouncedLevel = useDebounce(level, 100)[0] // Debounce the level updates
 
   useControls({ SpeedUp: { value: speedUp, onChange: setSpeedUp } })
 
@@ -40,31 +48,39 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
     setIsLoaded(true)
   }, [])
 
+  const updateGame = useCallback(
+    (timestamp: number) => {
+      if (!startTimeRef.current) {
+        startTimeRef.current = timestamp
+      }
+
+      const elapsedTime = (timestamp - startTimeRef.current) / 1000
+      const interval = speedUp ? 1.55 : 15.5 // seconds
+
+      if (elapsedTime >= interval) {
+        setSeconds((prevSeconds) => prevSeconds + interval)
+        setLevel((prevLevel) => (prevLevel + 1) as ILevel)
+        setGameOver(false)
+        startTimeRef.current = timestamp
+      }
+
+      if (elapsedTime >= 60) {
+        setGameOver(true)
+        cancelAnimationFrame(requestRef.current!)
+        return
+      }
+
+      requestRef.current = requestAnimationFrame(updateGame)
+    },
+    [speedUp]
+  )
+
   useEffect(() => {
-    let timer: number | undefined
-
-    const interval = speedUp ? 1550 : 15500
-
-    const startLevelTimer = () => {
-      let elapsedTime = 0
-      timer = setInterval(() => {
-        elapsedTime += interval / 1000
-        console.log('elapsedtime', elapsedTime)
-        setSeconds(elapsedTime)
-        if (elapsedTime >= 60) {
-          setGameOver(true)
-          if (timer) clearInterval(timer)
-        } else {
-          setLevel((prevLevel) => (prevLevel + 1) as ILevel)
-          setGameOver(false)
-        }
-      }, interval)
-    }
-
     if (!pause) {
-      startLevelTimer()
+      requestRef.current = requestAnimationFrame(updateGame)
     } else {
-      if (timer) clearInterval(timer)
+      if (requestRef.current) cancelAnimationFrame(requestRef.current)
+      startTimeRef.current = null
     }
 
     if (pause) {
@@ -74,24 +90,27 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
     }
 
     return () => {
-      if (timer) clearInterval(timer)
+      if (requestRef.current) cancelAnimationFrame(requestRef.current)
     }
-  }, [pause, speedUp])
+  }, [pause, speedUp, updateGame])
 
-  const providerValues = {
-    pause,
-    setPause,
-    level,
-    setLevel,
-    seconds,
-    setSeconds,
-    speedUp,
-    setSpeedUp,
-    gameOver,
-    setGameOver,
-    isLoaded,
-    setIsLoaded,
-  }
+  const providerValues = useMemo(
+    () => ({
+      pause,
+      setPause,
+      level: debouncedLevel,
+      setLevel,
+      seconds,
+      setSeconds,
+      speedUp,
+      setSpeedUp,
+      gameOver,
+      setGameOver,
+      isLoaded,
+      setIsLoaded,
+    }),
+    [pause, debouncedLevel, seconds, speedUp, gameOver, isLoaded]
+  )
 
   return (
     <GameContext.Provider value={providerValues}>

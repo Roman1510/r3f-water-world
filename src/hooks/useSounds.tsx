@@ -12,11 +12,10 @@ const useSounds = () => {
 
   const levelSpeedMap = useMemo(
     () => ({
-      1: 1.0,
-      2: 1.4,
-      3: 1.8,
-      4: 2.2,
-      5: 2.2,
+      1: 1.1,
+      2: 1.5,
+      3: 1.85,
+      4: 2.3,
     }),
     []
   )
@@ -90,7 +89,8 @@ const useSounds = () => {
   }, [handleInteraction])
 
   useEffect(() => {
-    const playbackRate = levelSpeedMap[level] || 1.0
+    const playbackRate =
+      levelSpeedMap[level as keyof typeof levelSpeedMap] || 1.0
 
     if (beatRef.current) beatRef.current.playbackRate = playbackRate
     if (breathRef.current) breathRef.current.playbackRate = playbackRate
