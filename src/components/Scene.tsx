@@ -56,7 +56,9 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
       />
       <Physics gravity={[0, -10, 0]}>
         <KeyboardControls map={keyboardControls}>
-          {ready ? <Stage oxygenPosition={oxygenPosition} /> : null}
+          {ready ? (
+            <Stage key="main-stage" oxygenPosition={oxygenPosition} />
+          ) : null}
         </KeyboardControls>
       </Physics>
       <PointerLockControls

@@ -18,6 +18,7 @@ export function CanvasWrapper() {
       }}
     >
       <Canvas
+        key="canvas-game"
         dpr={0.45}
         camera={{ fov: 30 }}
         onCreated={({ scene }) => {
@@ -31,7 +32,7 @@ export function CanvasWrapper() {
         }}
       >
         <Suspense fallback={<Loading />}>
-          <Scene canvasRef={canvasRef} />
+          <Scene key="scene-game" canvasRef={canvasRef} />
         </Suspense>
         <AdaptiveDpr pixelated />
         <AdaptiveEvents />
