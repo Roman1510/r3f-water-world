@@ -1,13 +1,13 @@
-import { Suspense } from 'react'
-import { useGame } from '../hooks/useGame'
-import { MaskOverlay } from './MaskOverlay'
-import { StartGame } from './StartGame'
-import useSounds from '../hooks/useSounds'
+import { Suspense } from 'react';
+import { useGame } from '../hooks/useGame';
+import { MaskOverlay } from './MaskOverlay';
+import { StartGame } from './StartGame';
+import useSounds from '../hooks/useSounds';
 
 const Overlay = () => {
-  const { pause, isLoaded } = useGame()
+  const { pause, isLoaded, level, gameOver } = useGame();
 
-  useSounds()
+  useSounds({ pause, gameOver, level });
 
   return (
     <Suspense>
@@ -21,7 +21,7 @@ const Overlay = () => {
         <MaskOverlay />
       )}
     </Suspense>
-  )
-}
+  );
+};
 
-export default Overlay
+export default Overlay;

@@ -32,7 +32,7 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
   };
 
   const [ready, setReady] = useState(false);
-  const { setPause, level, oxygenPosition } = useGame();
+  const { setPause, seconds, oxygenPosition } = useGame();
 
   useEffect(() => {
     setPause(true);
@@ -77,7 +77,7 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
             <Noise blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.4} />
             <Vignette eskil={false} offset={0.55} darkness={0.9} />
             <>
-              {level === 4 && (
+              {seconds >= 40 && (
                 <ChromaticAberration
                   blendFunction={BlendFunction.SOFT_LIGHT}
                   offset={new Vector2(0.02, 0.05)}
