@@ -11,9 +11,9 @@ export function Seaweeds({ range = 100 }: SeaweedProps) {
   const { nodes, materials } = useGLTF(
     'https://roman1510.github.io/files/seaweed.glb'
   );
-  const mesh = nodes.TallSeaweed.children[0] as Mesh;
-
-  const scale = useMemo(() => new Vector3(5, 5, 5), []);
+  const { geometry } = nodes.TallSeaweed.children[0] as Mesh;
+  const material = materials.lambert1;
+  const scale = useMemo(() => new Vector3(4, 4, 4), []);
 
   const seaweedInstances = useMemo(() => {
     return Array.from({ length: range }).map((_, i: number) => {
@@ -27,11 +27,7 @@ export function Seaweeds({ range = 100 }: SeaweedProps) {
   }, [range, scale]);
 
   return (
-    <Instances
-      range={range}
-      material={materials.lambert1}
-      geometry={mesh.geometry}
-    >
+    <Instances range={range} material={material} geometry={geometry}>
       {seaweedInstances}
     </Instances>
   );
