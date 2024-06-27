@@ -3,6 +3,7 @@ import { Player } from './Player';
 import { WaterPlane } from './WaterPlane';
 import { Vector3 } from 'three';
 import { Seaweeds } from './Seaweeds/Seaweeds';
+import { SeaUrchins } from './SeaUrchins/SeaUrchins';
 
 export function Stage({ oxygenPosition }: { oxygenPosition: Vector3 }) {
   const { scene: oxygenModel } = useGLTF(
@@ -23,6 +24,7 @@ export function Stage({ oxygenPosition }: { oxygenPosition: Vector3 }) {
         key="oxygen"
       />
       <Seaweeds range={7000} />
+      {/* <SeaUrchins range={50} /> */}
     </>
   );
 }
