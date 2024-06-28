@@ -3,7 +3,6 @@ import { Player } from './Player';
 import { WaterPlane } from './WaterPlane';
 import { Vector3 } from 'three';
 import { Seaweeds } from './Seaweeds/Seaweeds';
-import { SeaUrchins } from './SeaUrchins/SeaUrchins';
 
 export function Stage({ oxygenPosition }: { oxygenPosition: Vector3 }) {
   const { scene: oxygenModel } = useGLTF(
