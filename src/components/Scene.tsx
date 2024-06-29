@@ -28,7 +28,7 @@ interface ISceneProps {
 extend({ ShaderPass });
 export const Scene = ({ canvasRef }: ISceneProps) => {
   const [ready, setReady] = useState(false);
-  const { setPause, level, pause, oxygenPosition } = useGame();
+  const { setPause, level, pause, oxygenPosition, setOxygenTaken } = useGame();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pointerLockControlsRef = useRef<any>(null);
   useEffect(() => {
@@ -74,6 +74,7 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
         onLock={() => {
           setReady(true);
           setPause(false);
+          setOxygenTaken(false);
         }}
         onUnlock={() => {
           setReady(false);
