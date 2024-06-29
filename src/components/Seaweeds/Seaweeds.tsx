@@ -21,8 +21,15 @@ export function Seaweeds({ range = 100 }: SeaweedProps) {
       const z = (Math.random() - 0.5) * 1500;
       const y = Math.random() * 1 - 25.5;
       const position = new Vector3(x, y, z);
-
-      return <Seaweed key={i} position={position} scale={scale} />;
+      const rotationY = Math.random() * 1;
+      return (
+        <Seaweed
+          key={i}
+          position={position}
+          rotation={[0, rotationY, 0]}
+          scale={scale}
+        />
+      );
     });
   }, [range, scale]);
 
