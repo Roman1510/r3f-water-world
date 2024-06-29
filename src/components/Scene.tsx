@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Environment,
   KeyboardControls,
@@ -27,16 +27,23 @@ interface ISceneProps {
 }
 extend({ ShaderPass });
 export const Scene = ({ canvasRef }: ISceneProps) => {
-  const handleStartGame = () => {
-    setReady(true);
-  };
-
   const [ready, setReady] = useState(false);
-  const { setPause, seconds, oxygenPosition } = useGame();
-
+  const { setPause, level, pause, oxygenPosition } = useGame();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pointerLockControlsRef = useRef<any>(null);
   useEffect(() => {
     setPause(true);
   }, [setPause]);
+
+  useEffect(() => {
+    if (pointerLockControlsRef.current) {
+      if (pause) {
+        pointerLockControlsRef.current.unlock();
+      } else {
+        pointerLockControlsRef.current.lock();
+      }
+    }
+  }, [pause]);
 
   const { focusDistance, focalLength, bokehScale } = useControls(
     'DepthOfField',
@@ -56,16 +63,16 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
       />
       <Physics gravity={[0, -10, 0]}>
         <KeyboardControls map={keyboardControls}>
-          {ready ? (
+          {ready && !pause ? (
             <Stage key="main-stage" oxygenPosition={oxygenPosition} />
           ) : null}
         </KeyboardControls>
       </Physics>
       <PointerLockControls
+        ref={pointerLockControlsRef}
         domElement={canvasRef.current!}
         onLock={() => {
           setReady(true);
-          handleStartGame();
           setPause(false);
         }}
         onUnlock={() => {
@@ -73,13 +80,13 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
           setPause(true);
         }}
       />
-      {ready && (
+      {ready && !pause && (
         <>
           <EffectComposer enableNormalPass={false} multisampling={4}>
             <Noise blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.4} />
             <Vignette eskil={false} offset={0.55} darkness={0.9} />
             <>
-              {seconds >= 40 && (
+              {level >= 4 && (
                 <ChromaticAberration
                   blendFunction={BlendFunction.SOFT_LIGHT}
                   offset={new Vector2(0.02, 0.05)}

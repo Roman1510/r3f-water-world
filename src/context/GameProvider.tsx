@@ -25,7 +25,6 @@ export type GameContextType = {
   isLoaded: boolean;
   setIsLoaded: Dispatch<SetStateAction<boolean>>;
   oxygenPosition: Vector3;
-  setSpeedUp: Dispatch<SetStateAction<boolean>>;
 };
 
 export const GameContext = createContext<GameContextType | undefined>(
@@ -36,7 +35,6 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
   const [pause, setPause] = useState(true);
   const [level, setLevel] = useState<ILevel>(1);
   const [seconds, setSeconds] = useState(0);
-  const [speedUp, setSpeedUp] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const requestRef = useRef<number | null>(null);
@@ -55,24 +53,22 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
       }
 
       const elapsedTime = (timestamp - startTimeRef.current) / 1000;
-      const interval = speedUp ? 1.55 : 15.5; // seconds
+      const interval = 15.5; // seconds
 
-      if (elapsedTime >= interval) {
+      if (elapsedTime >= interval && level <= 4) {
         setSeconds((prevSeconds) => prevSeconds + interval);
         setLevel((prevLevel) => (prevLevel + 1) as ILevel);
         setGameOver(false);
         startTimeRef.current = timestamp;
-      }
-
-      if (elapsedTime >= 60) {
+      } else if (level > 4) {
         setGameOver(true);
-        cancelAnimationFrame(requestRef.current!);
-        return;
+        setPause(true);
+        setLevel(1);
       }
 
       requestRef.current = requestAnimationFrame(updateGame);
     },
-    [speedUp]
+    [level]
   );
 
   useEffect(() => {
@@ -92,7 +88,7 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [pause, speedUp, updateGame]);
+  }, [pause, updateGame]);
 
   const generateRandomPositionInRing = (
     innerRadius: number,
@@ -120,7 +116,6 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
       setLevel,
       seconds,
       setSeconds,
-      setSpeedUp,
       gameOver,
       setGameOver,
       isLoaded,

@@ -19,7 +19,7 @@ export function SeaRocks({ range = 50 }: SeaUrchinsProps) {
     return Array.from({ length: range }).map((_, i: number) => {
       const x = (Math.random() - 0.5) * 1500;
       const z = (Math.random() - 0.5) * 1500;
-      const y = Math.random() * 1 - 30.5;
+      const y = Math.random() * 1 - 31.5;
       const position = new Vector3(x, y, z);
 
       const rotationY = Math.random() * Math.PI;
