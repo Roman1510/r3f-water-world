@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
 import styled from 'styled-components';
 
 interface IProps {
@@ -7,14 +9,37 @@ interface IProps {
 }
 
 export const StartGame = ({ title, instructions, footer }: IProps) => {
+  const imageRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    if (imageRef.current) {
+      gsap.to(imageRef.current, {
+        y: 13,
+        repeat: -1,
+        yoyo: true,
+        duration: 1,
+        ease: 'power1.inOut',
+      });
+    }
+  }, []);
+
   return (
     <OverlayContainer>
-      <Container>
-        <Content>
-          <Title>{title}</Title>
-          <Instructions>{instructions}</Instructions>
-        </Content>
-      </Container>
+      <ContentWrapper>
+        <Container>
+          <Content>
+            <Title>{title}</Title>
+            <Instructions>{instructions}</Instructions>
+          </Content>
+        </Container>
+        <ImageWrapper>
+          <Image
+            ref={imageRef}
+            src="https://roman1510.github.io/files/monster-fish.PNG"
+            alt="Monster Fish"
+          />
+        </ImageWrapper>
+      </ContentWrapper>
       <Footer>{footer}</Footer>
     </OverlayContainer>
   );
@@ -34,20 +59,28 @@ const OverlayContainer = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
-const Container = styled.div`
+const ContentWrapper = styled.div`
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
   padding-left: 5%;
-  width: 60%;
-  height: 100%; /* Ensure the container takes full height */
+  box-sizing: border-box;
+`;
+
+const Container = styled.div`
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+  justify-content: center;
 `;
 
 const Content = styled.div`
-  text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 80px;
+  gap: 20px;
 `;
 
 const Title = styled.h1`
@@ -59,6 +92,19 @@ const Title = styled.h1`
   text-shadow: 2px 2px 8px #000;
   user-select: none;
   line-height: 1.05;
+  text-align: center;
+`;
+
+const ImageWrapper = styled.div`
+  width: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Image = styled.img`
+  width: 250px;
+  height: 250px;
 `;
 
 const Instructions = styled.p`
