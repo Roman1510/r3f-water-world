@@ -14,10 +14,10 @@ export const StartGame = ({ title, instructions, footer }: IProps) => {
   useEffect(() => {
     if (imageRef.current) {
       gsap.to(imageRef.current, {
-        y: 13,
+        y: 35,
         repeat: -1,
         yoyo: true,
-        duration: 1,
+        duration: 0.8,
         ease: 'power1.inOut',
       });
     }

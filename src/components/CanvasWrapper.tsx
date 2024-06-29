@@ -1,11 +1,11 @@
 import { useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Suspense } from 'react';
-import { Loading } from './Loading';
 
 import { Color, FogExp2 } from 'three';
 import { Scene } from './Scene';
 import { AdaptiveDpr, AdaptiveEvents } from '@react-three/drei';
+import { Loading } from './Loading';
 
 export function CanvasWrapper() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
