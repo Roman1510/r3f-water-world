@@ -21,7 +21,7 @@ export function Seaweeds({ range = 100 }: SeaweedProps) {
       const z = (Math.random() - 0.5) * 1500;
       const y = Math.random() * 1 - 25.5;
       const position = new Vector3(x, y, z);
-      const rotationY = Math.random() * 1;
+      const rotationY = Math.random() * Math.PI;
       return (
         <Seaweed
           key={i}
