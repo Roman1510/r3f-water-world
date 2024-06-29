@@ -29,6 +29,8 @@ export type GameContextType = {
   setOxygenIsClose: Dispatch<SetStateAction<boolean>>;
   oxygenTaken: boolean;
   setOxygenTaken: Dispatch<SetStateAction<boolean>>;
+  isDead: boolean;
+  setIsDead: Dispatch<SetStateAction<boolean>>;
 };
 
 export const GameContext = createContext<GameContextType | undefined>(
@@ -46,7 +48,7 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
   const startTimeRef = useRef<number | null>(null);
   const [oxygenTaken, setOxygenTaken] = useState(false);
   const debouncedLevel = useDebounce(level, 100)[0];
-
+  const [isDead, setIsDead] = useState(false);
   useEffect(() => {
     setIsLoaded(true);
   }, []);
@@ -69,6 +71,7 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
         setGameOver(true);
         setPause(true);
         setLevel(1);
+        setIsDead(true);
       }
 
       requestRef.current = requestAnimationFrame(updateGame);
@@ -130,6 +133,8 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
       setOxygenIsClose,
       oxygenTaken,
       setOxygenTaken,
+      isDead,
+      setIsDead,
     }),
     [
       pause,
@@ -140,6 +145,7 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
       oxygenPosition,
       oxygenIsClose,
       oxygenTaken,
+      isDead,
     ]
   );
 
