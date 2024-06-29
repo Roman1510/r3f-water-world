@@ -1,11 +1,5 @@
-import { Instances, useGLTF, Merged } from '@react-three/drei';
-import {
-  BufferGeometry,
-  Material,
-  Mesh,
-  NormalBufferAttributes,
-  Vector3,
-} from 'three';
+import { Instances, useGLTF } from '@react-three/drei';
+import { Mesh, Vector3 } from 'three';
 import { SeaUrchin } from './SeaUrchin';
 import { useMemo } from 'react';
 
@@ -17,23 +11,12 @@ export function SeaUrchins({ range = 50 }: SeaUrchinsProps) {
   const { nodes, materials } = useGLTF(
     'https://roman1510.github.io/files/sea-urchin.glb'
   );
-  console.log('nodes', nodes);
 
-  const meshes = {
-    LODPurpleSeaUrchinSkinMat: nodes.LOD0_PurpleSeaUrchinSkin_Mat_0 as Mesh,
-    LODPurpleSeaUrchinSpineSkinMat:
-      nodes.LOD0_PurpleSeaUrchinSpine_Skin_Mat_0 as Mesh,
-    LODPurpleSeaUrchinSpineSkinMat1:
-      nodes.LOD0_PurpleSeaUrchinSpine_Skin_Mat_0001 as Mesh,
-    LODPurpleSeaUrchinSpineSkinMat2:
-      nodes.LOD0_PurpleSeaUrchinSpine_Skin_Mat_0002 as Mesh,
-    LODPurpleSeaUrchinSpineSkinMat3:
-      nodes.LOD0_PurpleSeaUrchinSpine_Skin_Mat_0003 as Mesh,
-  };
+  const geometry = (nodes.LOD0_PurpleSeaUrchinSkin_Mat_0 as Mesh).geometry;
 
   const { PurpleSeaUrchinSpine_Skin_Mat } = materials;
 
-  const scale = useMemo(() => new Vector3(4, 4, 4), []);
+  const scale = useMemo(() => new Vector3(1, 1, 1), []);
 
   const seaUrchinInstances = useMemo(() => {
     return Array.from({ length: range }).map((_, i: number) => {
@@ -47,22 +30,13 @@ export function SeaUrchins({ range = 50 }: SeaUrchinsProps) {
   }, [range, scale]);
 
   return (
-    <Merged meshes={meshes}>
-      {(mergedMesh: {
-        geometry: BufferGeometry<NormalBufferAttributes> | undefined;
-        material: Material | Material[] | undefined;
-      }) => {
-        console.log(mergedMesh, 'mergedMesh');
-        return (
-          <Instances
-            geometry={mergedMesh.geometry}
-            material={PurpleSeaUrchinSpine_Skin_Mat}
-          >
-            {seaUrchinInstances}
-          </Instances>
-        );
-      }}
-    </Merged>
+    <Instances
+      range={range}
+      geometry={geometry}
+      material={PurpleSeaUrchinSpine_Skin_Mat}
+    >
+      {seaUrchinInstances}
+    </Instances>
   );
 }
 

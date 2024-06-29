@@ -93,7 +93,7 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
               focalLength={focalLength}
               bokehScale={bokehScale}
             />
-            <WaterEffect factor={0.63} />
+            <WaterEffect factor={0.68} />
           </EffectComposer>
         </>
       )}

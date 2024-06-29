@@ -13,7 +13,6 @@ export function Seaweeds({ range = 100 }: SeaweedProps) {
   );
   const { geometry } = nodes.TallSeaweed.children[0] as Mesh;
   const material = materials.lambert1;
-  const scale = useMemo(() => new Vector3(4, 4, 4), []);
 
   const seaweedInstances = useMemo(() => {
     return Array.from({ length: range }).map((_, i: number) => {
@@ -22,6 +21,10 @@ export function Seaweeds({ range = 100 }: SeaweedProps) {
       const y = Math.random() * 1 - 25.5;
       const position = new Vector3(x, y, z);
       const rotationY = Math.random() * Math.PI;
+      const scaleX = Math.random() * (6 - 1) + 1;
+      const scaleY = Math.random() * (7 - 1) + 1;
+      const scaleZ = Math.random() * (6 - 1) + 1;
+      const scale = new Vector3(scaleX, scaleY, scaleZ);
       return (
         <Seaweed
           key={i}
@@ -31,7 +34,7 @@ export function Seaweeds({ range = 100 }: SeaweedProps) {
         />
       );
     });
-  }, [range, scale]);
+  }, [range]);
 
   return (
     <Instances range={range} material={material} geometry={geometry}>

@@ -105,8 +105,8 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
     return new Vector3(x, -29, z);
   };
 
-  const innerRadius = 300;
-  const outerRadius = 500;
+  const innerRadius = 355;
+  const outerRadius = 400;
   const oxygenPosition = useMemo(
     () => generateRandomPositionInRing(innerRadius, outerRadius),
     [innerRadius, outerRadius]
