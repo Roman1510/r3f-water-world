@@ -4,4 +4,5 @@ export const keyboardControls = [
   { name: 'left', keys: ['ArrowLeft', 'a', 'A'] },
   { name: 'right', keys: ['ArrowRight', 'd', 'D'] },
   { name: 'dash', keys: ['Space'] },
-]
+  { name: 'take', keys: ['E', 'e'] },
+];

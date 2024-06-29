@@ -14,6 +14,9 @@ import { useGame } from '../hooks/useGame';
 const direction = new Vector3();
 const frontVector = new Vector3();
 const sideVector = new Vector3();
+const targetOffset = new Vector3();
+const spotlight2Offset = new Vector3();
+const playerPosition = new Vector3();
 
 const MAX_VERTICAL_ANGLE = Math.PI / 7.5;
 const BASE_SPEED_MULTIPLIER = 12;
@@ -26,7 +29,14 @@ export function Player() {
 
   const targetRef = useRef<Mesh>(null);
   const [, get] = useKeyboardControls();
-  const { pause } = useGame();
+  const {
+    pause,
+    oxygenPosition,
+    setOxygenIsClose,
+    setGameOver,
+    setOxygenTaken,
+    setPause,
+  } = useGame();
   const { camera } = useThree();
 
   useCameraShake(0.65, 1.6);
@@ -35,6 +45,7 @@ export function Player() {
     camera.quaternion.set(0, 0, 0, 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pause]);
+
   const { spotlight2OffsetX, spotlight2OffsetY, spotlight2OffsetZ } =
     useControls({
       spotlight2OffsetX: { value: 0, min: -150, max: 150, step: 0.1 },
@@ -44,8 +55,8 @@ export function Player() {
 
   useFrame((state) => {
     if (ref.current) {
-      const { forward, backward, left, right, dash } = get();
-      const velocity = ref.current!.linvel();
+      const { forward, backward, left, right, dash, take } = get();
+      const velocity = ref.current.linvel();
 
       state.camera.rotation.order = 'YXZ';
       const cameraRotation = state.camera.rotation.x;
@@ -55,7 +66,7 @@ export function Player() {
         state.camera.rotation.x = -MAX_VERTICAL_ANGLE;
       }
 
-      const { x, y, z } = ref.current!.translation();
+      const { x, y, z } = ref.current.translation();
       state.camera.position.set(x, y, z);
 
       frontVector.set(0, 0, +backward - +forward);
@@ -65,15 +76,13 @@ export function Player() {
         .normalize()
         .multiplyScalar(dash ? DASH_SPEED_MULTIPLIER : BASE_SPEED_MULTIPLIER)
         .applyQuaternion(state.camera.quaternion);
-      ref.current!.setLinvel(
+      ref.current.setLinvel(
         { x: direction.x, y: velocity.y, z: direction.z },
         true
       );
 
       if (targetRef.current) {
-        const targetOffset = new Vector3(0, 0, -70).applyQuaternion(
-          state.camera.quaternion
-        );
+        targetOffset.set(0, 0, -70).applyQuaternion(state.camera.quaternion);
         targetRef.current.position
           .copy(state.camera.position)
           .add(targetOffset);
@@ -81,20 +90,32 @@ export function Player() {
 
       if (spotlightRef1.current && spotlightRef2.current && targetRef.current) {
         spotlightRef1.current.position.copy(state.camera.position);
-        spotlightRef1.current.target = targetRef.current!;
+        spotlightRef1.current.target = targetRef.current;
         spotlightRef1.current.target.updateMatrixWorld();
 
-        const spotlight2Offset = new Vector3(
-          spotlight2OffsetX,
-          spotlight2OffsetY,
-          spotlight2OffsetZ
-        ).applyQuaternion(state.camera.quaternion);
+        spotlight2Offset
+          .set(spotlight2OffsetX, spotlight2OffsetY, spotlight2OffsetZ)
+          .applyQuaternion(state.camera.quaternion);
 
         spotlightRef2.current.position
-          .copy(targetRef.current!.position)
+          .copy(targetRef.current.position)
           .add(spotlight2Offset);
-        spotlightRef2.current.target = targetRef.current!;
+        spotlightRef2.current.target = targetRef.current;
         spotlightRef2.current.target.updateMatrixWorld();
+      }
+
+      playerPosition.set(x, y, z);
+      const distanceToOxygen = playerPosition.distanceTo(oxygenPosition);
+      if (distanceToOxygen <= 75) {
+        setOxygenIsClose(true);
+        if (take) {
+          setOxygenTaken(true);
+          setGameOver(true);
+          setPause(true);
+          setOxygenIsClose(false);
+        }
+      } else {
+        setOxygenIsClose(false);
       }
     }
   });

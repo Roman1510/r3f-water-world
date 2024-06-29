@@ -25,6 +25,10 @@ export type GameContextType = {
   isLoaded: boolean;
   setIsLoaded: Dispatch<SetStateAction<boolean>>;
   oxygenPosition: Vector3;
+  oxygenIsClose: boolean;
+  setOxygenIsClose: Dispatch<SetStateAction<boolean>>;
+  oxygenTaken: boolean;
+  setOxygenTaken: Dispatch<SetStateAction<boolean>>;
 };
 
 export const GameContext = createContext<GameContextType | undefined>(
@@ -37,9 +41,10 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
   const [seconds, setSeconds] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [oxygenIsClose, setOxygenIsClose] = useState(false);
   const requestRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
-
+  const [oxygenTaken, setOxygenTaken] = useState(false);
   const debouncedLevel = useDebounce(level, 100)[0];
 
   useEffect(() => {
@@ -88,7 +93,7 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [pause, updateGame]);
+  }, [pause, updateGame, gameOver]);
 
   const generateRandomPositionInRing = (
     innerRadius: number,
@@ -121,8 +126,21 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
       isLoaded,
       setIsLoaded,
       oxygenPosition,
+      oxygenIsClose,
+      setOxygenIsClose,
+      oxygenTaken,
+      setOxygenTaken,
     }),
-    [pause, debouncedLevel, seconds, gameOver, isLoaded, oxygenPosition]
+    [
+      pause,
+      debouncedLevel,
+      seconds,
+      gameOver,
+      isLoaded,
+      oxygenPosition,
+      oxygenIsClose,
+      oxygenTaken,
+    ]
   );
 
   return (

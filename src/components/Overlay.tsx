@@ -5,7 +5,7 @@ import { StartGame } from './StartGame';
 import useSounds from '../hooks/useSounds';
 
 const Overlay = () => {
-  const { pause, isLoaded, level, gameOver } = useGame();
+  const { pause, isLoaded, level, gameOver, oxygenIsClose } = useGame();
 
   useSounds({ pause, gameOver, level });
 
@@ -19,6 +19,32 @@ const Overlay = () => {
         />
       ) : (
         <MaskOverlay />
+      )}
+      {oxygenIsClose && !pause && !gameOver && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            width: '50px',
+            height: '50px',
+            backgroundColor: '#fff',
+            zIndex: 999999,
+            transform: 'translate(-50%, -50%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: '2px solid #ccc',
+            borderRadius: '6px',
+            boxShadow: '0 4px #999',
+            fontFamily: 'Arial, sans-serif',
+            fontWeight: 'bold',
+            fontSize: '24px',
+            color: '#333',
+          }}
+        >
+          E
+        </div>
       )}
     </Suspense>
   );

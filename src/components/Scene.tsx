@@ -83,7 +83,7 @@ export const Scene = ({ canvasRef }: ISceneProps) => {
       {ready && !pause && (
         <>
           <EffectComposer enableNormalPass={false} multisampling={4}>
-            <Noise blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.4} />
+            <Noise blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.3} />
             <Vignette eskil={false} offset={0.55} darkness={0.9} />
             <>
               {level >= 4 && (
