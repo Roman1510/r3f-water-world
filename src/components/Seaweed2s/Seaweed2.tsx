@@ -1,7 +1,7 @@
 import { Instance } from '@react-three/drei';
 import { useRef } from 'react';
 
-export function SeaUrchin({ ...props }) {
+export function Seaweed2({ ...props }) {
   const ref = useRef();
 
   return (

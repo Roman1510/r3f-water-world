@@ -40,7 +40,7 @@ export const GameProvider = ({ children }: PropsWithChildren) => {
   const requestRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
-  const debouncedLevel = useDebounce(level, 100)[0]; // Debounce the level updates
+  const debouncedLevel = useDebounce(level, 100)[0];
 
   useEffect(() => {
     setIsLoaded(true);

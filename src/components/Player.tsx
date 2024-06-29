@@ -29,7 +29,7 @@ export function Player() {
   const { pause } = useGame();
   const { camera } = useThree();
 
-  useCameraShake(0.55, 1.4);
+  useCameraShake(0.65, 1.6);
 
   useEffect(() => {
     camera.quaternion.set(0, 0, 0, 1);
@@ -111,7 +111,7 @@ export function Player() {
       />
       <SpotLight
         ref={spotlightRef2}
-        intensity={150000}
+        intensity={60000}
         distance={550}
         angle={Math.PI / 9.5}
         penumbra={0.05}

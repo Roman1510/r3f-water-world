@@ -16,13 +16,13 @@ export function Seaweeds({ range = 100 }: SeaweedProps) {
 
   const seaweedInstances = useMemo(() => {
     return Array.from({ length: range }).map((_, i: number) => {
-      const x = (Math.random() - 0.5) * 1500;
-      const z = (Math.random() - 0.5) * 1500;
+      const x = (Math.random() - 0.5) * 1250;
+      const z = (Math.random() - 0.5) * 1250;
       const y = Math.random() * 1 - 27.5;
       const position = new Vector3(x, y, z);
       const rotationY = Math.random() * Math.PI;
       const scaleX = Math.random() * (6 - 1) + 1;
-      const scaleY = 4.5;
+      const scaleY = 5.5;
       const scaleZ = Math.random() * (6 - 1) + 1;
       const scale = new Vector3(scaleX, scaleY, scaleZ);
       return (

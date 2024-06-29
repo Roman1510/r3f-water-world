@@ -1,34 +1,34 @@
 import { Instances, useGLTF } from '@react-three/drei';
 import { Mesh, Vector3 } from 'three';
-import { SeaRock } from './SeaRock';
+import { Seashell } from './Seashell';
 import { useMemo } from 'react';
 
 interface SeaUrchinsProps {
   range: number;
 }
 
-export function SeaRocks({ range = 50 }: SeaUrchinsProps) {
+export function Seashells({ range = 50 }: SeaUrchinsProps) {
   const { nodes, materials } = useGLTF(
-    'https://roman1510.github.io/files/rock1.glb'
+    'https://roman1510.github.io/files/seashell.glb'
   );
 
   const geometry = (nodes.Object_2 as Mesh).geometry;
+
   const material = materials['Scene_-_Root'];
 
-  const seaUrchinInstances = useMemo(() => {
+  const seashellInstances = useMemo(() => {
     return Array.from({ length: range }).map((_, i: number) => {
-      const x = (Math.random() - 0.5) * 600;
-      const z = (Math.random() - 0.5) * 600;
-      const y = Math.random() * 1 - 31.5;
-      const position = new Vector3(x, y, z);
-
+      const x = (Math.random() - 0.5) * 700;
+      const z = (Math.random() - 0.5) * 700;
+      const y = Math.random() * 1 - 30.5;
+      const position = new Vector3(x + 17, y, z + 15);
       const rotationY = Math.random() * Math.PI;
-
-      const scaleFactor = Math.random() * 3 + 3.5;
-      const scale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
-
+      const scaleX = 0.15;
+      const scaleY = 0.15;
+      const scaleZ = 0.15;
+      const scale = new Vector3(scaleX, scaleY, scaleZ);
       return (
-        <SeaRock
+        <Seashell
           key={i}
           position={position}
           rotation={[0, rotationY, 0]}
@@ -40,9 +40,9 @@ export function SeaRocks({ range = 50 }: SeaUrchinsProps) {
 
   return (
     <Instances range={range} geometry={geometry} material={material}>
-      {seaUrchinInstances}
+      {seashellInstances}
     </Instances>
   );
 }
 
-useGLTF.preload('https://roman1510.github.io/files/rock1.glb');
+useGLTF.preload('https://roman1510.github.io/files/seashell.glb');
