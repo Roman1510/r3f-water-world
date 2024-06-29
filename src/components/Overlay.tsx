@@ -13,8 +13,8 @@ const Overlay = () => {
     <Suspense>
       {pause && isLoaded ? (
         <StartGame
-          title="You want to survive, just click on your screen."
-          instructions="Use [WASD] to move and [Space] for dash. To pick up oxygen use [E]"
+          title="In the deepest ocean, there's no oxygen to waste..."
+          instructions="Click on the screen to take control, and use [WASD] to move and [Space] for dash. To pick up oxygen use [E]"
           footer="This game contains sounds, be careful. Github: Roman1510"
         />
       ) : (
