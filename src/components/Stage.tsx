@@ -7,6 +7,7 @@ import { SeaRocks } from './SeaRock/SeaRocks';
 import { Seaweed2s } from './Seaweed2s/Seaweed2s';
 import { SmallRocks } from './SmallRocks/SmallRocks';
 import { Seashells } from './Seashell/Seashells';
+import { Fish } from './Fish/Fish';
 
 export function Stage({ oxygenPosition }: { oxygenPosition: Vector3 }) {
   return (
@@ -19,6 +20,7 @@ export function Stage({ oxygenPosition }: { oxygenPosition: Vector3 }) {
       <SeaRocks range={100} />
       <SmallRocks range={700} />
       <Seashells range={4} />
+      <Fish />
     </>
   );
 }
